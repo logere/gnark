@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/consensys/gnark/frontend"
-	fiatshamir "github.com/consensys/gnark/std/fiat-shamir"
-	"github.com/consensys/gnark/std/polynomial"
-	"github.com/consensys/gnark/std/sumcheck"
+	"github.com/zilong-dai/gnark/frontend"
+	fiatshamir "github.com/zilong-dai/gnark/std/fiat-shamir"
+	"github.com/zilong-dai/gnark/std/polynomial"
+	"github.com/zilong-dai/gnark/std/sumcheck"
 )
 
 // @tabaie TODO: Contains many things copy-pasted from gnark-crypto. Generify somehow?

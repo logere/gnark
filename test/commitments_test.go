@@ -5,17 +5,17 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/consensys/gnark/backend"
-	groth16 "github.com/consensys/gnark/backend/groth16/bn254"
-	"github.com/consensys/gnark/backend/witness"
-	cs "github.com/consensys/gnark/constraint/bn254"
-	"github.com/consensys/gnark/frontend/cs/r1cs"
 	"github.com/stretchr/testify/require"
+	"github.com/zilong-dai/gnark/backend"
+	groth16 "github.com/zilong-dai/gnark/backend/groth16/bn254"
+	"github.com/zilong-dai/gnark/backend/witness"
+	cs "github.com/zilong-dai/gnark/constraint/bn254"
+	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/frontend/cs/scs"
 	"github.com/stretchr/testify/assert"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/frontend/cs/scs"
 )
 
 type noCommitmentCircuit struct {

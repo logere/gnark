@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/math/uints"
-	"github.com/consensys/gnark/std/permutation/sha2"
-	"github.com/consensys/gnark/test"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/math/uints"
+	"github.com/zilong-dai/gnark/std/permutation/sha2"
+	"github.com/zilong-dai/gnark/test"
 )
 
 var _K = []uint32{

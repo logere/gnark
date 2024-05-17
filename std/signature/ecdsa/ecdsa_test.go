@@ -8,10 +8,10 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/secp256k1/ecdsa"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/algebra/emulated/sw_emulated"
-	"github.com/consensys/gnark/std/math/emulated"
-	"github.com/consensys/gnark/test"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_emulated"
+	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/zilong-dai/gnark/test"
 )
 
 type EcdsaCircuit[T, S emulated.FieldParams] struct {

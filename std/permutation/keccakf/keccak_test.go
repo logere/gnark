@@ -3,13 +3,13 @@ package keccakf_test
 import (
 	"testing"
 
-	"github.com/consensys/gnark/std/math/uints"
+	"github.com/zilong-dai/gnark/std/math/uints"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/backend"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/permutation/keccakf"
-	"github.com/consensys/gnark/test"
+	"github.com/zilong-dai/gnark/backend"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/permutation/keccakf"
+	"github.com/zilong-dai/gnark/test"
 )
 
 type keccakfCircuit struct {

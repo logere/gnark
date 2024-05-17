@@ -2,12 +2,12 @@ package lzss
 
 import (
 	"github.com/consensys/compress/lzss"
-	hint "github.com/consensys/gnark/constraint/solver"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/compress"
-	"github.com/consensys/gnark/std/compress/internal"
-	"github.com/consensys/gnark/std/compress/internal/plonk"
-	"github.com/consensys/gnark/std/lookup/logderivlookup"
+	hint "github.com/zilong-dai/gnark/constraint/solver"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/compress"
+	"github.com/zilong-dai/gnark/std/compress/internal"
+	"github.com/zilong-dai/gnark/std/compress/internal/plonk"
+	"github.com/zilong-dai/gnark/std/lookup/logderivlookup"
 )
 
 // TODO Provide option for c to be in sizes other than bytes

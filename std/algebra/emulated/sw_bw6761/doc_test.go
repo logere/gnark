@@ -6,10 +6,10 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761"
-	"github.com/consensys/gnark/backend/groth16"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/frontend/cs/r1cs"
-	"github.com/consensys/gnark/std/algebra/emulated/sw_bw6761"
+	"github.com/zilong-dai/gnark/backend/groth16"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
+	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bw6761"
 )
 
 type PairCircuit struct {

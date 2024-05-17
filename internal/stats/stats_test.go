@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/consensys/gnark/backend"
 	"github.com/stretchr/testify/require"
+	"github.com/zilong-dai/gnark/backend"
 )
 
 func TestCircuitStatistics(t *testing.T) {

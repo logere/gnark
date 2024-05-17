@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/backend/groth16"
-	groth16_bn254 "github.com/consensys/gnark/backend/groth16/bn254"
-	icicle_bn254 "github.com/consensys/gnark/backend/groth16/bn254/icicle"
-	cs_bn254 "github.com/consensys/gnark/constraint/bn254"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/frontend/cs/r1cs"
-	"github.com/consensys/gnark/test"
+	"github.com/zilong-dai/gnark/backend/groth16"
+	groth16_bn254 "github.com/zilong-dai/gnark/backend/groth16/bn254"
+	icicle_bn254 "github.com/zilong-dai/gnark/backend/groth16/bn254/icicle"
+	cs_bn254 "github.com/zilong-dai/gnark/constraint/bn254"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
+	"github.com/zilong-dai/gnark/test"
 )
 
 type circuit struct {

@@ -1,8 +1,8 @@
 package gkr
 
 import (
-	"github.com/consensys/gnark/constraint"
-	"github.com/consensys/gnark/std/utils/algo_utils"
+	"github.com/zilong-dai/gnark/constraint"
+	"github.com/zilong-dai/gnark/std/utils/algo_utils"
 )
 
 func frontendVarToInt(a constraint.GkrVariable) int {

@@ -46,8 +46,8 @@ limitations under the License.
 package merkle
 
 import (
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/hash"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/hash"
 )
 
 // MerkleProof stores the path, the root hash and an helper for the Merkle proof.

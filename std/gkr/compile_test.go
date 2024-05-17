@@ -1,9 +1,10 @@
 package gkr
 
 import (
-	"github.com/consensys/gnark/constraint"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/zilong-dai/gnark/constraint"
 )
 
 func TestCompile2Cycles(t *testing.T) {

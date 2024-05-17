@@ -6,9 +6,9 @@ import (
 	"slices"
 
 	cryptofiatshamir "github.com/consensys/gnark-crypto/fiat-shamir"
-	fiatshamir "github.com/consensys/gnark/std/fiat-shamir"
-	"github.com/consensys/gnark/std/math/bits"
-	"github.com/consensys/gnark/std/math/emulated"
+	fiatshamir "github.com/zilong-dai/gnark/std/fiat-shamir"
+	"github.com/zilong-dai/gnark/std/math/bits"
+	"github.com/zilong-dai/gnark/std/math/emulated"
 )
 
 // getChallengeNames returns all the challenge names used in the sumcheck

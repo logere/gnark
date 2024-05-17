@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/consensys/gnark/logger"
 	"github.com/rs/zerolog"
+	"github.com/zilong-dai/gnark/logger"
 )
 
 // Option defines option for altering the behavior of a constraint system

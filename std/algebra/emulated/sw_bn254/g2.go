@@ -4,9 +4,9 @@ import (
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc/bn254"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/algebra/emulated/fields_bn254"
-	"github.com/consensys/gnark/std/math/emulated"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/algebra/emulated/fields_bn254"
+	"github.com/zilong-dai/gnark/std/math/emulated"
 )
 
 type G2 struct {

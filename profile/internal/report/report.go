@@ -26,9 +26,9 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/consensys/gnark/profile/internal/graph"
-	"github.com/consensys/gnark/profile/internal/measurement"
 	"github.com/google/pprof/profile"
+	"github.com/zilong-dai/gnark/profile/internal/graph"
+	"github.com/zilong-dai/gnark/profile/internal/measurement"
 )
 
 // Output formats.

@@ -1,8 +1,8 @@
 package emulated
 
 import (
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/math/emulated"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/math/emulated"
 )
 
 type Circuit struct {

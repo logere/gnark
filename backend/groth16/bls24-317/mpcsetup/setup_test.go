@@ -19,14 +19,14 @@ package mpcsetup
 import (
 	curve "github.com/consensys/gnark-crypto/ecc/bls24-317"
 	"github.com/consensys/gnark-crypto/ecc/bls24-317/fr"
-	cs "github.com/consensys/gnark/constraint/bls24-317"
+	cs "github.com/zilong-dai/gnark/constraint/bls24-317"
 	"testing"
 
-	"github.com/consensys/gnark/backend/groth16"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/frontend/cs/r1cs"
-	"github.com/consensys/gnark/std/hash/mimc"
 	"github.com/stretchr/testify/require"
+	"github.com/zilong-dai/gnark/backend/groth16"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
+	"github.com/zilong-dai/gnark/std/hash/mimc"
 
 	native_mimc "github.com/consensys/gnark-crypto/ecc/bls24-317/fr/mimc"
 )

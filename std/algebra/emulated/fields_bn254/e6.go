@@ -2,7 +2,7 @@ package fields_bn254
 
 import (
 	"github.com/consensys/gnark-crypto/ecc/bn254"
-	"github.com/consensys/gnark/frontend"
+	"github.com/zilong-dai/gnark/frontend"
 )
 
 type E6 struct {

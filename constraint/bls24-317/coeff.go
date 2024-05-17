@@ -17,8 +17,8 @@
 package cs
 
 import (
-	"github.com/consensys/gnark/constraint"
-	"github.com/consensys/gnark/internal/utils"
+	"github.com/zilong-dai/gnark/constraint"
+	"github.com/zilong-dai/gnark/internal/utils"
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc/bls24-317/fr"

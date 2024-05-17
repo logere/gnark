@@ -24,12 +24,12 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	fiatshamir "github.com/consensys/gnark-crypto/fiat-shamir"
 	"github.com/consensys/gnark-crypto/hash"
-	"github.com/consensys/gnark/constraint"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/frontend/cs/scs"
-	"github.com/consensys/gnark/internal/utils"
-	"github.com/consensys/gnark/std/hash/mimc"
-	"github.com/consensys/gnark/test"
+	"github.com/zilong-dai/gnark/constraint"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/frontend/cs/scs"
+	"github.com/zilong-dai/gnark/internal/utils"
+	"github.com/zilong-dai/gnark/std/hash/mimc"
+	"github.com/zilong-dai/gnark/test"
 )
 
 type FiatShamirCircuit struct {

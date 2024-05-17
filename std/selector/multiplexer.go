@@ -11,11 +11,12 @@ package selector
 
 import (
 	"fmt"
-	"github.com/consensys/gnark/constraint/solver"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/math/bits"
 	"math/big"
 	binary "math/bits"
+
+	"github.com/zilong-dai/gnark/constraint/solver"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/math/bits"
 )
 
 func init() {

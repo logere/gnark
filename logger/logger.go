@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/consensys/gnark/debug"
 	"github.com/rs/zerolog"
+	"github.com/zilong-dai/gnark/debug"
 )
 
 var logger zerolog.Logger

@@ -21,16 +21,16 @@ import (
 	"io"
 	"time"
 
-	"github.com/consensys/gnark/backend/witness"
-	"github.com/consensys/gnark/constraint"
-	csolver "github.com/consensys/gnark/constraint/solver"
-	"github.com/consensys/gnark/internal/backend/ioutils"
-	"github.com/consensys/gnark/logger"
+	"github.com/zilong-dai/gnark/backend/witness"
+	"github.com/zilong-dai/gnark/constraint"
+	csolver "github.com/zilong-dai/gnark/constraint/solver"
+	"github.com/zilong-dai/gnark/internal/backend/ioutils"
+	"github.com/zilong-dai/gnark/logger"
 	"reflect"
 
 	"github.com/consensys/gnark-crypto/ecc"
 
-	fr "github.com/consensys/gnark/internal/tinyfield"
+	fr "github.com/zilong-dai/gnark/internal/tinyfield"
 )
 
 type R1CS = system

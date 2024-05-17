@@ -17,11 +17,11 @@
 package cs
 
 import (
-	"github.com/consensys/gnark/constraint"
-	"github.com/consensys/gnark/internal/utils"
+	"github.com/zilong-dai/gnark/constraint"
+	"github.com/zilong-dai/gnark/internal/utils"
 	"math/big"
 
-	fr "github.com/consensys/gnark/internal/tinyfield"
+	fr "github.com/zilong-dai/gnark/internal/tinyfield"
 )
 
 // CoeffTable ensure we store unique coefficients in the constraint system

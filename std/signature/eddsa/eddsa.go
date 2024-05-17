@@ -20,11 +20,11 @@ package eddsa
 import (
 	"errors"
 
-	"github.com/consensys/gnark/logger"
-	"github.com/consensys/gnark/std/hash"
+	"github.com/zilong-dai/gnark/logger"
+	"github.com/zilong-dai/gnark/std/hash"
 
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/algebra/native/twistededwards"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/algebra/native/twistededwards"
 
 	tedwards "github.com/consensys/gnark-crypto/ecc/twistededwards"
 

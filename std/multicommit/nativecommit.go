@@ -18,8 +18,8 @@ package multicommit
 import (
 	"fmt"
 
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/internal/kvstore"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/internal/kvstore"
 )
 
 type multicommitter struct {

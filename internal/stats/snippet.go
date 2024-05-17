@@ -4,17 +4,17 @@ import (
 	"math"
 	"sync"
 
-	"github.com/consensys/gnark"
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/algebra/emulated/sw_bls12381"
-	"github.com/consensys/gnark/std/algebra/emulated/sw_bn254"
-	"github.com/consensys/gnark/std/algebra/emulated/sw_bw6761"
-	"github.com/consensys/gnark/std/algebra/native/sw_bls12377"
-	"github.com/consensys/gnark/std/algebra/native/sw_bls24315"
-	"github.com/consensys/gnark/std/hash/mimc"
-	"github.com/consensys/gnark/std/math/bits"
-	"github.com/consensys/gnark/std/math/emulated"
+	"github.com/zilong-dai/gnark"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bls12381"
+	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bn254"
+	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bw6761"
+	"github.com/zilong-dai/gnark/std/algebra/native/sw_bls12377"
+	"github.com/zilong-dai/gnark/std/algebra/native/sw_bls24315"
+	"github.com/zilong-dai/gnark/std/hash/mimc"
+	"github.com/zilong-dai/gnark/std/math/bits"
+	"github.com/zilong-dai/gnark/std/math/emulated"
 )
 
 var (

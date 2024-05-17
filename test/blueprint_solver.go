@@ -3,8 +3,8 @@ package test
 import (
 	"math/big"
 
-	"github.com/consensys/gnark/constraint"
-	"github.com/consensys/gnark/internal/utils"
+	"github.com/zilong-dai/gnark/constraint"
+	"github.com/zilong-dai/gnark/internal/utils"
 )
 
 // blueprintSolver is a constraint.Solver that can be used to test a circuit

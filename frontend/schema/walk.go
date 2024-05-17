@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/consensys/gnark/frontend/schema/internal/reflectwalk"
+	"github.com/zilong-dai/gnark/frontend/schema/internal/reflectwalk"
 )
 
 // Walk walks through the provided object and stops when it encounters objects of type tLeaf

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/test"
 	"github.com/stretchr/testify/assert"
+	"github.com/zilong-dai/gnark/frontend"
+	"github.com/zilong-dai/gnark/test"
 )
 
 type TestSingleMapCircuit struct {

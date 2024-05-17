@@ -13,9 +13,9 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/consensys/gnark/logger"
-	"github.com/consensys/gnark/profile/internal/report"
 	"github.com/google/pprof/profile"
+	"github.com/zilong-dai/gnark/logger"
+	"github.com/zilong-dai/gnark/profile/internal/report"
 )
 
 var (

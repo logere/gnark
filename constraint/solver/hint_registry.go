@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"sync"
 
-	"github.com/consensys/gnark/logger"
+	"github.com/zilong-dai/gnark/logger"
 )
 
 func init() {

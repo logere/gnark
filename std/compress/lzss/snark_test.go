@@ -4,18 +4,19 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/consensys/gnark/frontend/cs/scs"
 	"os"
 	"testing"
 
+	"github.com/zilong-dai/gnark/frontend/cs/scs"
+
 	"github.com/consensys/compress/lzss"
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/backend"
-	"github.com/consensys/gnark/frontend"
-	test_vector_utils "github.com/consensys/gnark/std/utils/test_vectors_utils"
-	"github.com/consensys/gnark/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zilong-dai/gnark/backend"
+	"github.com/zilong-dai/gnark/frontend"
+	test_vector_utils "github.com/zilong-dai/gnark/std/utils/test_vectors_utils"
+	"github.com/zilong-dai/gnark/test"
 )
 
 func TestNothingRoundTrip(t *testing.T) {
