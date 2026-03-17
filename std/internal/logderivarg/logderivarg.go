@@ -42,10 +42,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/hash/mimc"
-	"github.com/zilong-dai/gnark/std/multicommit"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/hash/mimc"
+	"github.com/logere/gnark/std/multicommit"
 )
 
 func init() {

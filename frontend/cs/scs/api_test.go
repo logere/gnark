@@ -5,9 +5,9 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/stretchr/testify/require"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/test"
 )
 
 type circuitDupAdd struct {

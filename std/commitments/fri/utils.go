@@ -3,8 +3,8 @@ package fri
 import (
 	"math/big"
 
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
 )
 
 // exp helper function that returns x^{e}

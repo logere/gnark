@@ -19,8 +19,8 @@ package sw_bls12377
 import (
 	"errors"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/native/fields_bls12377"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/native/fields_bls12377"
 )
 
 // GT target group of the pairing

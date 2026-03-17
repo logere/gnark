@@ -1,8 +1,8 @@
 package sha3
 
 import (
-	"github.com/zilong-dai/gnark/std/math/uints"
-	"github.com/zilong-dai/gnark/std/permutation/keccakf"
+	"github.com/logere/gnark/std/math/uints"
+	"github.com/logere/gnark/std/permutation/keccakf"
 )
 
 type digest struct {

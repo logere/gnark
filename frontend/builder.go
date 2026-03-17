@@ -3,9 +3,9 @@ package frontend
 import (
 	"math/big"
 
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend/schema"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend/schema"
 )
 
 type NewBuilder func(*big.Int, CompileConfig) (Builder, error)
@@ -93,7 +93,7 @@ type Committer interface {
 
 // Rangechecker allows to externally range-check the variables to be of
 // specified width. Not all compilers implement this interface. Users should
-// instead use [github.com/zilong-dai/gnark/std/rangecheck] package which
+// instead use [github.com/logere/gnark/std/rangecheck] package which
 // automatically chooses most optimal method for range checking the variables.
 type Rangechecker interface {
 	// Check checks that the given variable v has bit-length bits.

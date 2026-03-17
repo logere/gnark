@@ -8,13 +8,13 @@ import (
 	bls24315 "github.com/consensys/gnark-crypto/ecc/bls24-315"
 	fr_bls24315 "github.com/consensys/gnark-crypto/ecc/bls24-315/fr"
 	fr_bw6633 "github.com/consensys/gnark-crypto/ecc/bw6-633/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/algopts"
-	"github.com/zilong-dai/gnark/std/algebra/native/fields_bls24315"
-	"github.com/zilong-dai/gnark/std/math/bits"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/std/math/emulated/emparams"
-	"github.com/zilong-dai/gnark/std/selector"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/algopts"
+	"github.com/logere/gnark/std/algebra/native/fields_bls24315"
+	"github.com/logere/gnark/std/math/bits"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/math/emulated/emparams"
+	"github.com/logere/gnark/std/selector"
 )
 
 // Curve allows G1 operations in BLS24-315.

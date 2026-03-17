@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/internal/utils"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/internal/utils"
 )
 
 // Element defines an element in the ring of integers modulo n. The integer

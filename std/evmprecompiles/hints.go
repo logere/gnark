@@ -5,9 +5,9 @@ import (
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc/secp256k1/ecdsa"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/math/emulated"
 )
 
 func init() {

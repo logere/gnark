@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/profile"
-	"github.com/zilong-dai/gnark/std/compress/lzss"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/profile"
+	"github.com/logere/gnark/std/compress/lzss"
 )
 
 func main() {

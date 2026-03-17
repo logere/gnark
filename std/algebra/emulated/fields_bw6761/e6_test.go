@@ -6,9 +6,9 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761"
 	"github.com/consensys/gnark-crypto/ecc/bw6-761/fp"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/test"
 )
 
 type e6Add struct {

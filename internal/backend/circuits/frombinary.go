@@ -1,7 +1,7 @@
 package circuits
 
 import (
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 type fromBinaryCircuit struct {

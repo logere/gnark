@@ -3,8 +3,8 @@ package bitslice
 import (
 	"math/big"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/rangecheck"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/rangecheck"
 )
 
 // Partition partitions v into two parts splitted at bit numbered split. The

@@ -3,9 +3,9 @@ package selector_test
 import (
 	"testing"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/selector"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/selector"
+	"github.com/logere/gnark/test"
 )
 
 type partitionerCircuit struct {

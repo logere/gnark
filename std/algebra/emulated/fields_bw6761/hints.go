@@ -4,8 +4,8 @@ import (
 	"math/big"
 
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/std/math/emulated"
 )
 
 func init() {

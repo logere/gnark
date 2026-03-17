@@ -5,15 +5,15 @@ import (
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/backend/groth16"
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/std/algebra"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bn254"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	stdgroth16 "github.com/zilong-dai/gnark/std/recursion/groth16"
+	"github.com/logere/gnark/backend/groth16"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/std/algebra"
+	"github.com/logere/gnark/std/algebra/emulated/sw_bn254"
+	"github.com/logere/gnark/std/math/emulated"
+	stdgroth16 "github.com/logere/gnark/std/recursion/groth16"
 )
 
 // InnerCircuitNative is the definition of the inner circuit we want to

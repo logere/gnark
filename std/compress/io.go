@@ -5,10 +5,10 @@ import (
 	"hash"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/compress/internal/plonk"
-	"github.com/zilong-dai/gnark/std/hash/mimc"
-	"github.com/zilong-dai/gnark/std/lookup/logderivlookup"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/compress/internal/plonk"
+	"github.com/logere/gnark/std/hash/mimc"
+	"github.com/logere/gnark/std/lookup/logderivlookup"
 )
 
 // Pack packs the words as tightly as possible, and works Big Endian: i.e. the first word is the most significant in the packed elem

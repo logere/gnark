@@ -2,7 +2,7 @@ package twistededwards
 
 import (
 	"github.com/consensys/gnark-crypto/ecc/twistededwards"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 // curve curve is the default twisted edwards companion curve (defined on api.Curve().Fr)

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 // hollow takes a gnark circuit and removes all the witness data. The resulting circuit can be used for compilation purposes

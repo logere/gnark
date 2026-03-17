@@ -6,11 +6,11 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/debug"
-	"github.com/zilong-dai/gnark/frontend/schema"
-	"github.com/zilong-dai/gnark/internal/circuitdefer"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/debug"
+	"github.com/logere/gnark/frontend/schema"
+	"github.com/logere/gnark/internal/circuitdefer"
+	"github.com/logere/gnark/logger"
 )
 
 // Compile will generate a ConstraintSystem from the given circuit

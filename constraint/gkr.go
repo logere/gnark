@@ -5,8 +5,8 @@ import (
 	"sort"
 
 	"github.com/consensys/gnark-crypto/utils"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/std/utils/algo_utils"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/std/utils/algo_utils"
 )
 
 type GkrVariable int // Just an alias to hide implementation details. May be more trouble than worth

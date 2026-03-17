@@ -4,9 +4,9 @@ import (
 	"math/big"
 
 	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/fields_bls12381"
-	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/emulated/fields_bls12381"
+	"github.com/logere/gnark/std/math/emulated"
 )
 
 type G2 struct {

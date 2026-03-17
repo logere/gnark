@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 // Slice selects a slice of the input array at indices [start, end), and zeroes the array at other

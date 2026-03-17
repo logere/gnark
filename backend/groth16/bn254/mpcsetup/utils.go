@@ -25,7 +25,7 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	curve "github.com/consensys/gnark-crypto/ecc/bn254"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
-	"github.com/zilong-dai/gnark/internal/utils"
+	"github.com/logere/gnark/internal/utils"
 )
 
 type PublicKey struct {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/std/recursion"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/std/recursion"
 )
 
 // GetNativeProverOptions returns PLONK prover options for the native prover to

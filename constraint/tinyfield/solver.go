@@ -22,8 +22,8 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/field/pool"
 	"github.com/rs/zerolog"
-	"github.com/zilong-dai/gnark/constraint"
-	csolver "github.com/zilong-dai/gnark/constraint/solver"
+	"github.com/logere/gnark/constraint"
+	csolver "github.com/logere/gnark/constraint/solver"
 	"math"
 	"math/big"
 	"strconv"
@@ -31,7 +31,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	fr "github.com/zilong-dai/gnark/internal/tinyfield"
+	fr "github.com/logere/gnark/internal/tinyfield"
 )
 
 // solver represent the state of the solver during a call to System.Solve(...)

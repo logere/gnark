@@ -1,7 +1,7 @@
 package fields_bn254
 
 import (
-	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/math/emulated"
 )
 
 func (e Ext12) nSquareTorus(z *E6, n int) *E6 {

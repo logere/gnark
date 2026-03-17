@@ -15,7 +15,7 @@
 package cubic
 
 import (
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 // Circuit defines a simple circuit

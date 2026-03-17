@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zilong-dai/gnark/constraint"
+	"github.com/logere/gnark/constraint"
 )
 
 func TestCompile2Cycles(t *testing.T) {

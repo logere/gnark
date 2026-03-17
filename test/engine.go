@@ -27,21 +27,21 @@ import (
 	"sync/atomic"
 
 	"github.com/bits-and-blooms/bitset"
-	"github.com/zilong-dai/gnark/constraint"
+	"github.com/logere/gnark/constraint"
 
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/debug"
-	"github.com/zilong-dai/gnark/frontend/schema"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/debug"
+	"github.com/logere/gnark/frontend/schema"
+	"github.com/logere/gnark/logger"
 	"golang.org/x/crypto/sha3"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/field/pool"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/internal/circuitdefer"
-	"github.com/zilong-dai/gnark/internal/kvstore"
-	"github.com/zilong-dai/gnark/internal/utils"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/internal/circuitdefer"
+	"github.com/logere/gnark/internal/kvstore"
+	"github.com/logere/gnark/internal/utils"
 )
 
 // engine implements frontend.API

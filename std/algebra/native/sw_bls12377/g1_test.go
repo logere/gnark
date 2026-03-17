@@ -23,11 +23,11 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fp"
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/algopts"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/std/math/emulated/emparams"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/algopts"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/math/emulated/emparams"
+	"github.com/logere/gnark/test"
 
 	bls12377 "github.com/consensys/gnark-crypto/ecc/bls12-377"
 )

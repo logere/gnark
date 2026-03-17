@@ -6,11 +6,11 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/internal/kvstore"
-	"github.com/zilong-dai/gnark/internal/utils"
-	"github.com/zilong-dai/gnark/logger"
-	"github.com/zilong-dai/gnark/std/rangecheck"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/internal/kvstore"
+	"github.com/logere/gnark/internal/utils"
+	"github.com/logere/gnark/logger"
+	"github.com/logere/gnark/std/rangecheck"
 	"golang.org/x/exp/constraints"
 )
 

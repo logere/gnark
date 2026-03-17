@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/zilong-dai/gnark/frontend"
-	fiatshamir "github.com/zilong-dai/gnark/std/fiat-shamir"
-	"github.com/zilong-dai/gnark/std/polynomial"
+	"github.com/logere/gnark/frontend"
+	fiatshamir "github.com/logere/gnark/std/fiat-shamir"
+	"github.com/logere/gnark/std/polynomial"
 )
 
 // LazyClaims is the Claims data structure on the verifier side. It is "lazy" in that it has to compute fewer things.

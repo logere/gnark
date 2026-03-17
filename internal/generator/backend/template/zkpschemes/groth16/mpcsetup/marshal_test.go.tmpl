@@ -1,12 +1,12 @@
 import (
 	"testing"
 
-	gnarkio "github.com/zilong-dai/gnark/io"
+	gnarkio "github.com/logere/gnark/io"
 
 	{{- template "import_curve" . }}
 	{{- template "import_backend_cs" . }}
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
 	"github.com/stretchr/testify/require"
 )
 

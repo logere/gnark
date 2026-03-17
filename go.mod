@@ -1,4 +1,4 @@
-module github.com/zilong-dai/gnark
+module github.com/logere/gnark
 
 go 1.22
 

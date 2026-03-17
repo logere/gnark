@@ -2,7 +2,7 @@ package fields_bls12381
 
 import (
 	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 type E6 struct {

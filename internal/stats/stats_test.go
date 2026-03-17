@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zilong-dai/gnark/backend"
+	"github.com/logere/gnark/backend"
 )
 
 func TestCircuitStatistics(t *testing.T) {

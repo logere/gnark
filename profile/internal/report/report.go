@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/google/pprof/profile"
-	"github.com/zilong-dai/gnark/profile/internal/graph"
-	"github.com/zilong-dai/gnark/profile/internal/measurement"
+	"github.com/logere/gnark/profile/internal/graph"
+	"github.com/logere/gnark/profile/internal/measurement"
 )
 
 // Output formats.

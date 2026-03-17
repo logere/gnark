@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/test"
 )
 
 type TestSingleMapCircuit struct {

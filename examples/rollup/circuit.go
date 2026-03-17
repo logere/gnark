@@ -18,11 +18,11 @@ package rollup
 
 import (
 	tedwards "github.com/consensys/gnark-crypto/ecc/twistededwards"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/accumulator/merkle"
-	"github.com/zilong-dai/gnark/std/algebra/native/twistededwards"
-	"github.com/zilong-dai/gnark/std/hash/mimc"
-	"github.com/zilong-dai/gnark/std/signature/eddsa"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/accumulator/merkle"
+	"github.com/logere/gnark/std/algebra/native/twistededwards"
+	"github.com/logere/gnark/std/hash/mimc"
+	"github.com/logere/gnark/std/signature/eddsa"
 )
 
 const (

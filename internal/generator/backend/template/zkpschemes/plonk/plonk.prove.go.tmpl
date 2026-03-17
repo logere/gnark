@@ -19,14 +19,14 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/{{toLower .Curve}}/fr/iop"
 	{{ template "import_kzg" . }}
 	fiatshamir "github.com/consensys/gnark-crypto/fiat-shamir"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/backend/witness"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/backend/witness"
 	{{ template "import_backend_cs" . }}
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/internal/utils"
-	"github.com/zilong-dai/gnark/logger"
-	fcs "github.com/zilong-dai/gnark/frontend/cs"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/internal/utils"
+	"github.com/logere/gnark/logger"
+	fcs "github.com/logere/gnark/frontend/cs"
 )
 
 // TODO in gnark-crypto:

@@ -19,7 +19,7 @@ import (
 	"crypto/sha256"
 	"hash"
 
-	"github.com/zilong-dai/gnark/constraint/solver"
+	"github.com/logere/gnark/constraint/solver"
 )
 
 // ID represent a unique ID for a proving scheme

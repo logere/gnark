@@ -7,16 +7,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/frontend/cs/scs"
 
 	"github.com/consensys/compress/lzss"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/frontend"
-	test_vector_utils "github.com/zilong-dai/gnark/std/utils/test_vectors_utils"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/frontend"
+	test_vector_utils "github.com/logere/gnark/std/utils/test_vectors_utils"
+	"github.com/logere/gnark/test"
 )
 
 func TestNothingRoundTrip(t *testing.T) {

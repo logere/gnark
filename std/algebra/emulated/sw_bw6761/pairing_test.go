@@ -8,11 +8,11 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761"
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/test"
 )
 
 func randomG1G2Affines() (bw6761.G1Affine, bw6761.G2Affine) {

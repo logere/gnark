@@ -18,19 +18,19 @@ package cs_test
 
 import (
 	"bytes"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/internal/backend/circuits"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/internal/backend/circuits"
 	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"github.com/zilong-dai/gnark/constraint/tinyfield"
+	"github.com/logere/gnark/constraint/tinyfield"
 
-	fr "github.com/zilong-dai/gnark/internal/tinyfield"
+	fr "github.com/logere/gnark/internal/tinyfield"
 )
 
 func TestSerialization(t *testing.T) {

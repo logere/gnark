@@ -20,10 +20,10 @@ import (
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/hash/mimc"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/hash/mimc"
+	"github.com/logere/gnark/test"
 )
 
 type circuitSignature Circuit

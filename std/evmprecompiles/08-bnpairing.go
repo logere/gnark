@@ -1,8 +1,8 @@
 package evmprecompiles
 
 import (
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bn254"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/emulated/sw_bn254"
 )
 
 // ECPair implements [ALT_BN128_PAIRING_CHECK] precompile contract at address 0x08.

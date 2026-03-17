@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/backend/groth16"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/std/selector"
+	"github.com/logere/gnark/backend/groth16"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/std/selector"
 )
 
 // adderCircuit adds first Count number of its input array In.

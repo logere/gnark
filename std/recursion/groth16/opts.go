@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/std/algebra/algopts"
-	"github.com/zilong-dai/gnark/std/commitments/pedersen"
-	"github.com/zilong-dai/gnark/std/recursion"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/std/algebra/algopts"
+	"github.com/logere/gnark/std/commitments/pedersen"
+	"github.com/logere/gnark/std/recursion"
 )
 
 type verifierCfg struct {

@@ -28,9 +28,9 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/bw6-633/fr/hash_to_field"
 	"github.com/consensys/gnark-crypto/ecc/bw6-633/fr/pedersen"
 	"github.com/consensys/gnark-crypto/utils"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/logger"
 )
 
 var (

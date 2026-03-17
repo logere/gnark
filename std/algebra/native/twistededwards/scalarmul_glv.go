@@ -22,8 +22,8 @@ import (
 	"sync"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
 )
 
 // phi endomorphism √-2 ∈ 𝒪₋₈

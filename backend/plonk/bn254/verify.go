@@ -34,8 +34,8 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc/bn254/kzg"
 	fiatshamir "github.com/consensys/gnark-crypto/fiat-shamir"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/logger"
 )
 
 var (

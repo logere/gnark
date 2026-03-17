@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/test"
 )
 
 func TestComposition(t *testing.T) {

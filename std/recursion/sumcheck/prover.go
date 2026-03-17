@@ -5,7 +5,7 @@ import (
 	"math/big"
 
 	fiatshamir "github.com/consensys/gnark-crypto/fiat-shamir"
-	"github.com/zilong-dai/gnark/std/recursion"
+	"github.com/logere/gnark/std/recursion"
 )
 
 type proverConfig struct {

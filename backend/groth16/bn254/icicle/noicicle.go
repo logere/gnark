@@ -5,10 +5,10 @@ package icicle_bn254
 import (
 	"fmt"
 
-	"github.com/zilong-dai/gnark/backend"
-	groth16_bn254 "github.com/zilong-dai/gnark/backend/groth16/bn254"
-	"github.com/zilong-dai/gnark/backend/witness"
-	cs "github.com/zilong-dai/gnark/constraint/bn254"
+	"github.com/logere/gnark/backend"
+	groth16_bn254 "github.com/logere/gnark/backend/groth16/bn254"
+	"github.com/logere/gnark/backend/witness"
+	cs "github.com/logere/gnark/constraint/bn254"
 )
 
 const HasIcicle = false

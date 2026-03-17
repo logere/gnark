@@ -26,7 +26,7 @@ import (
 	bw6633 "github.com/consensys/gnark-crypto/ecc/bw6-633/fr/mimc"
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761/fr/mimc"
 
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 var encryptFuncs map[ecc.ID]func(MiMC, frontend.Variable) frontend.Variable

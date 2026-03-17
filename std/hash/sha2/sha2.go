@@ -7,10 +7,10 @@ package sha2
 import (
 	"encoding/binary"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/hash"
-	"github.com/zilong-dai/gnark/std/math/uints"
-	"github.com/zilong-dai/gnark/std/permutation/sha2"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/hash"
+	"github.com/logere/gnark/std/math/uints"
+	"github.com/logere/gnark/std/permutation/sha2"
 )
 
 var _seed = uints.NewU32Array([]uint32{

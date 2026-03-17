@@ -14,14 +14,14 @@ import (
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761"
 	fr_bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761/fr"
 	cryptofs "github.com/consensys/gnark-crypto/fiat-shamir"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bw6761"
-	"github.com/zilong-dai/gnark/std/algebra/native/sw_bls12377"
-	"github.com/zilong-dai/gnark/std/algebra/native/sw_bls24315"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/std/recursion"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra"
+	"github.com/logere/gnark/std/algebra/emulated/sw_bw6761"
+	"github.com/logere/gnark/std/algebra/native/sw_bls12377"
+	"github.com/logere/gnark/std/algebra/native/sw_bls24315"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/recursion"
+	"github.com/logere/gnark/test"
 )
 
 type shortHashCircuit struct {

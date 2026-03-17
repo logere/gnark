@@ -18,17 +18,17 @@ package cs_test
 
 import (
 	"bytes"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/internal/backend/circuits"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/internal/backend/circuits"
 	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	cs "github.com/zilong-dai/gnark/constraint/bls24-317"
+	cs "github.com/logere/gnark/constraint/bls24-317"
 
 	"github.com/consensys/gnark-crypto/ecc/bls24-317/fr"
 )

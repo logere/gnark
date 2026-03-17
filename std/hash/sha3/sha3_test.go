@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/frontend"
-	zkhash "github.com/zilong-dai/gnark/std/hash"
-	"github.com/zilong-dai/gnark/std/math/uints"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	zkhash "github.com/logere/gnark/std/hash"
+	"github.com/logere/gnark/std/math/uints"
+	"github.com/logere/gnark/test"
 	"golang.org/x/crypto/sha3"
 )
 

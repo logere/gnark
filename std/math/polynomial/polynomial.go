@@ -5,8 +5,8 @@ import (
 	"math/big"
 	"math/bits"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/math/emulated"
 )
 
 var minFoldScaledLogSize = 16

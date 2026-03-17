@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/frontend/schema"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/frontend/schema"
 )
 
 // NewWitness build an ordered vector of field elements from the given assignment (Circuit)

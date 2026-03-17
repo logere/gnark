@@ -24,9 +24,9 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	bls12377 "github.com/consensys/gnark-crypto/ecc/bls12-377"
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/native/fields_bls12377"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/native/fields_bls12377"
+	"github.com/logere/gnark/test"
 )
 
 type finalExp struct {

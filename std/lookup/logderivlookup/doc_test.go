@@ -6,10 +6,10 @@ import (
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/backend/groth16"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/std/lookup/logderivlookup"
+	"github.com/logere/gnark/backend/groth16"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/std/lookup/logderivlookup"
 )
 
 type LookupCircuit struct {

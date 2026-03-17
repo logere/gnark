@@ -11,12 +11,12 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fr"
 	"github.com/consensys/gnark-crypto/hash"
 	"github.com/stretchr/testify/assert"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/profile"
-	test_vector_utils "github.com/zilong-dai/gnark/std/utils/test_vectors_utils"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/profile"
+	test_vector_utils "github.com/logere/gnark/std/utils/test_vectors_utils"
+	"github.com/logere/gnark/test"
 )
 
 func TestShiftLeft(t *testing.T) {

@@ -8,8 +8,8 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	bls12377 "github.com/consensys/gnark-crypto/ecc/bls12-377"
 	fr_bls12377 "github.com/consensys/gnark-crypto/ecc/bls12-377/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/test"
 )
 
 type MuxCircuitTest struct {

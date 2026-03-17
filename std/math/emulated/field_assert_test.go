@@ -3,8 +3,8 @@ package emulated
 import (
 	"testing"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/test"
 )
 
 type ZeroCircuit[T FieldParams] struct {

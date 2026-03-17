@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/test"
 	"golang.org/x/crypto/cryptobyte"
 	"golang.org/x/crypto/cryptobyte/asn1"
 )

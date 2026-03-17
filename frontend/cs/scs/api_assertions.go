@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/debug"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/internal/expr"
-	"github.com/zilong-dai/gnark/std/math/bits"
+	"github.com/logere/gnark/debug"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/internal/expr"
+	"github.com/logere/gnark/std/math/bits"
 )
 
 // AssertIsEqual fails if i1 != i2

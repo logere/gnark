@@ -10,16 +10,16 @@ import (
 	{{- template "import_fft" . }}
 	{{- template "import_hash_to_field" . }}
 	{{- template "import_pedersen" .}}
-	"github.com/zilong-dai/gnark/constraint"
+	"github.com/logere/gnark/constraint"
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/internal/utils"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/backend/groth16/internal"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/internal/utils"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/backend/groth16/internal"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/logger"
 
-	fcs "github.com/zilong-dai/gnark/frontend/cs"
+	fcs "github.com/logere/gnark/frontend/cs"
 )
 
 

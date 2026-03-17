@@ -22,11 +22,11 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/stretchr/testify/assert"
-	"github.com/zilong-dai/gnark/backend/groth16"
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/backend/groth16"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
 )
 
 type singleSecretCommittedCircuit struct {

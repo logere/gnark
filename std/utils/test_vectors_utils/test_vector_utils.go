@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 // These data structures fail to equate different representations of the same number. i.e. 5 = -10/-2

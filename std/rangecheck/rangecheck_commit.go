@@ -5,11 +5,11 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/internal/frontendtype"
-	"github.com/zilong-dai/gnark/internal/kvstore"
-	"github.com/zilong-dai/gnark/std/internal/logderivarg"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/internal/frontendtype"
+	"github.com/logere/gnark/internal/kvstore"
+	"github.com/logere/gnark/std/internal/logderivarg"
 )
 
 type ctxCheckerKey struct{}

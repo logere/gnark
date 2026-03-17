@@ -12,14 +12,14 @@ import (
 	fr_bn254 "github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	fr_bw6633 "github.com/consensys/gnark-crypto/ecc/bw6-633/fr"
 	fr_bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761/fr"
-	groth16_bls12377 "github.com/zilong-dai/gnark/backend/groth16/bls12-377"
-	groth16_bls12381 "github.com/zilong-dai/gnark/backend/groth16/bls12-381"
-	groth16_bls24315 "github.com/zilong-dai/gnark/backend/groth16/bls24-315"
-	groth16_bls24317 "github.com/zilong-dai/gnark/backend/groth16/bls24-317"
-	groth16_bn254 "github.com/zilong-dai/gnark/backend/groth16/bn254"
-	groth16_bw6633 "github.com/zilong-dai/gnark/backend/groth16/bw6-633"
-	groth16_bw6761 "github.com/zilong-dai/gnark/backend/groth16/bw6-761"
-	"github.com/zilong-dai/gnark/backend/witness"
+	groth16_bls12377 "github.com/logere/gnark/backend/groth16/bls12-377"
+	groth16_bls12381 "github.com/logere/gnark/backend/groth16/bls12-381"
+	groth16_bls24315 "github.com/logere/gnark/backend/groth16/bls24-315"
+	groth16_bls24317 "github.com/logere/gnark/backend/groth16/bls24-317"
+	groth16_bn254 "github.com/logere/gnark/backend/groth16/bn254"
+	groth16_bw6633 "github.com/logere/gnark/backend/groth16/bw6-633"
+	groth16_bw6761 "github.com/logere/gnark/backend/groth16/bw6-761"
+	"github.com/logere/gnark/backend/witness"
 )
 
 type ProofWithPublicInputs struct {

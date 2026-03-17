@@ -4,11 +4,11 @@ import (
 	"errors"
 	"math/big"
 
-	hint "github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/compress"
-	"github.com/zilong-dai/gnark/std/compress/internal/plonk"
-	"github.com/zilong-dai/gnark/std/lookup/logderivlookup"
+	hint "github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/compress"
+	"github.com/logere/gnark/std/compress/internal/plonk"
+	"github.com/logere/gnark/std/lookup/logderivlookup"
 )
 
 // TODO Use std/rangecheck instead

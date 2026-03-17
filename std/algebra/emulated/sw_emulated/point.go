@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/algopts"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/std/math/emulated/emparams"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/algopts"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/math/emulated/emparams"
 	"golang.org/x/exp/slices"
 )
 

@@ -25,9 +25,9 @@ import (
 	"github.com/consensys/gnark-crypto/accumulator/merkletree"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/hash"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/hash/mimc"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/hash/mimc"
+	"github.com/logere/gnark/test"
 )
 
 // MerkleProofTest used for testing only

@@ -21,11 +21,11 @@ import (
 	"io"
 	"time"
 
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/constraint"
-	csolver "github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/internal/backend/ioutils"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/constraint"
+	csolver "github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/internal/backend/ioutils"
+	"github.com/logere/gnark/logger"
 	"reflect"
 
 	"github.com/consensys/gnark-crypto/ecc"

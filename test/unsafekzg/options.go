@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/logger"
 )
 
 type Option func(*config) error

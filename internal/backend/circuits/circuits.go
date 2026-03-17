@@ -3,8 +3,8 @@ package circuits
 
 import (
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
 )
 
 // TestCircuit are used for test purposes (backend.Groth16 and gnark/integration_test.go)

@@ -24,8 +24,8 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/bw6-761/fr/pedersen"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/zilong-dai/gnark/backend/groth16/internal/test_utils"
-	"github.com/zilong-dai/gnark/io"
+	"github.com/logere/gnark/backend/groth16/internal/test_utils"
+	"github.com/logere/gnark/io"
 
 	"math/big"
 

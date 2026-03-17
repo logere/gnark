@@ -1,8 +1,8 @@
 package sumcheck
 
 import (
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/std/math/polynomial"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/math/polynomial"
 )
 
 // Proof contains the prover messages in the sumcheck protocol.

@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/debug"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/debug"
+	"github.com/logere/gnark/logger"
 )
 
 func Bsb22CommitmentComputePlaceholder(mod *big.Int, _ []*big.Int, output []*big.Int) (err error) {

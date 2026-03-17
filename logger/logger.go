@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
-	"github.com/zilong-dai/gnark/debug"
+	"github.com/logere/gnark/debug"
 )
 
 var logger zerolog.Logger

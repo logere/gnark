@@ -25,14 +25,14 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/stretchr/testify/require"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/frontend/schema"
-	gnarkio "github.com/zilong-dai/gnark/io"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/frontend/schema"
+	gnarkio "github.com/logere/gnark/io"
 )
 
 var (

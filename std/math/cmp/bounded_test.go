@@ -4,9 +4,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/math/cmp"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/math/cmp"
+	"github.com/logere/gnark/test"
 )
 
 func TestAssertIsLessEq(t *testing.T) {

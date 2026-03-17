@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/test"
 )
 
 func TestPreimage(t *testing.T) {

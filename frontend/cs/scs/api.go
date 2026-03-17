@@ -23,16 +23,16 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/zilong-dai/gnark/debug"
-	"github.com/zilong-dai/gnark/frontend/cs"
+	"github.com/logere/gnark/debug"
+	"github.com/logere/gnark/frontend/cs"
 
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/internal/expr"
-	"github.com/zilong-dai/gnark/frontend/schema"
-	"github.com/zilong-dai/gnark/internal/frontendtype"
-	"github.com/zilong-dai/gnark/std/math/bits"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/internal/expr"
+	"github.com/logere/gnark/frontend/schema"
+	"github.com/logere/gnark/internal/frontendtype"
+	"github.com/logere/gnark/std/math/bits"
 )
 
 // Add returns res = i1+i2+...in

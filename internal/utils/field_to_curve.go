@@ -5,7 +5,7 @@ import (
 	"math/bits"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark"
+	"github.com/logere/gnark"
 )
 
 var curves map[string]ecc.ID

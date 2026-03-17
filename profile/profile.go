@@ -14,8 +14,8 @@ import (
 	"sync/atomic"
 
 	"github.com/google/pprof/profile"
-	"github.com/zilong-dai/gnark/logger"
-	"github.com/zilong-dai/gnark/profile/internal/report"
+	"github.com/logere/gnark/logger"
+	"github.com/logere/gnark/profile/internal/report"
 )
 
 var (

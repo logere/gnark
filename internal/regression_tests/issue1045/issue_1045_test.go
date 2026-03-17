@@ -7,19 +7,19 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	fr_bn254 "github.com/consensys/gnark-crypto/ecc/bn254/fr"
-	"github.com/zilong-dai/gnark/backend/groth16"
-	"github.com/zilong-dai/gnark/backend/plonk"
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	"github.com/zilong-dai/gnark/frontend/cs/scs"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/backend/groth16"
+	"github.com/logere/gnark/backend/plonk"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/frontend/cs/scs"
+	"github.com/logere/gnark/test"
 )
 
 const (
-	explicitHintName  = "github.com/zilong-dai/gnark/internal/regression_tests/issue1045.ExplicitHint"
-	anonymousHintName = "github.com/zilong-dai/gnark/internal/regression_tests/issue1045.glob..func1"
+	explicitHintName  = "github.com/logere/gnark/internal/regression_tests/issue1045.ExplicitHint"
+	anonymousHintName = "github.com/logere/gnark/internal/regression_tests/issue1045.glob..func1"
 )
 
 func ExplicitHint(mod *big.Int, inputs []*big.Int, outputs []*big.Int) error {

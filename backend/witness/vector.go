@@ -13,8 +13,8 @@ import (
 	fr_bn254 "github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	fr_bw6633 "github.com/consensys/gnark-crypto/ecc/bw6-633/fr"
 	fr_bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761/fr"
-	"github.com/zilong-dai/gnark/internal/tinyfield"
-	"github.com/zilong-dai/gnark/internal/utils"
+	"github.com/logere/gnark/internal/tinyfield"
+	"github.com/logere/gnark/internal/utils"
 )
 
 func newVector(field *big.Int, size int) (any, error) {

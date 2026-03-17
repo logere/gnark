@@ -6,9 +6,9 @@ import (
 
 	bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761"
 	fr_bw6761 "github.com/consensys/gnark-crypto/ecc/bw6-761/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_emulated"
-	"github.com/zilong-dai/gnark/std/math/emulated"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/emulated/sw_emulated"
+	"github.com/logere/gnark/std/math/emulated"
 )
 
 // G1Affine is the point in G1. It is an alias to the generic emulated affine

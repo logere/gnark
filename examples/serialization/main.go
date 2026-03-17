@@ -6,11 +6,11 @@ import (
 	"github.com/fxamacker/cbor/v2"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/backend/groth16"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
+	"github.com/logere/gnark/backend/groth16"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
 
-	"github.com/zilong-dai/gnark/examples/cubic"
+	"github.com/logere/gnark/examples/cubic"
 )
 
 func main() {

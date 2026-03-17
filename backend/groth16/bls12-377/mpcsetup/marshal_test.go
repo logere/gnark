@@ -21,10 +21,10 @@ import (
 
 	curve "github.com/consensys/gnark-crypto/ecc/bls12-377"
 	"github.com/stretchr/testify/require"
-	cs "github.com/zilong-dai/gnark/constraint/bls12-377"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/cs/r1cs"
-	gnarkio "github.com/zilong-dai/gnark/io"
+	cs "github.com/logere/gnark/constraint/bls12-377"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/cs/r1cs"
+	gnarkio "github.com/logere/gnark/io"
 )
 
 func TestContributionSerialization(t *testing.T) {

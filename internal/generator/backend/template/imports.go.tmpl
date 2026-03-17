@@ -1,6 +1,6 @@
 {{- define "import_fr" }}
 	{{- if eq .Curve "tinyfield"}}
-	fr "github.com/zilong-dai/gnark/internal/tinyfield"	
+	fr "github.com/logere/gnark/internal/tinyfield"	
 	{{- else}}
 	"github.com/consensys/gnark-crypto/ecc/{{toLower .Curve}}/fr"
 	{{- end}}
@@ -20,9 +20,9 @@
 
 {{- define "import_backend_cs" }}
 	{{- if eq .Curve "tinyfield"}}
-	"github.com/zilong-dai/gnark/constraint/tinyfield"
+	"github.com/logere/gnark/constraint/tinyfield"
 	{{- else}}
-	cs "github.com/zilong-dai/gnark/constraint/{{toLower .Curve}}"
+	cs "github.com/logere/gnark/constraint/{{toLower .Curve}}"
 	{{- end}}
 {{- end }}
 
@@ -32,18 +32,18 @@
 
 {{- define "import_witness" }}
 	{{- if eq .Curve "tinyfield"}}
-	{{toLower .CurveID}}witness "github.com/zilong-dai/gnark/internal/tinyfield/witness"
+	{{toLower .CurveID}}witness "github.com/logere/gnark/internal/tinyfield/witness"
 	{{- else}}
-	{{toLower .CurveID}}witness "github.com/zilong-dai/gnark/internal/backend/{{toLower .Curve}}/witness"
+	{{toLower .CurveID}}witness "github.com/logere/gnark/internal/backend/{{toLower .Curve}}/witness"
 	{{- end}}
 {{- end }}
 
 {{- define "import_groth16" }}
-	{{toLower .CurveID}}groth16 "github.com/zilong-dai/gnark/internal/backend/{{toLower .Curve}}/groth16"
+	{{toLower .CurveID}}groth16 "github.com/logere/gnark/internal/backend/{{toLower .Curve}}/groth16"
 {{- end }}
 
 {{- define "import_plonk" }}
-	{{toLower .CurveID}}plonk "github.com/zilong-dai/gnark/internal/backend/{{toLower .Curve}}/plonk"
+	{{toLower .CurveID}}plonk "github.com/logere/gnark/internal/backend/{{toLower .Curve}}/plonk"
 {{- end }}
 
 {{- define "import_polynomial" }}

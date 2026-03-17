@@ -4,8 +4,8 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/constraint/solver"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/constraint/solver"
 )
 
 // ConstraintSystem interface that all constraint systems implement.

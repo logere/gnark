@@ -10,9 +10,9 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	"github.com/stretchr/testify/require"
-	"github.com/zilong-dai/gnark/backend/witness"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/io"
+	"github.com/logere/gnark/backend/witness"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/io"
 )
 
 type circuit struct {

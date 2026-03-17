@@ -17,11 +17,11 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/secp256k1"
 	fp_secp "github.com/consensys/gnark-crypto/ecc/secp256k1/fp"
 	fr_secp "github.com/consensys/gnark-crypto/ecc/secp256k1/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/algopts"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/std/math/emulated/emparams"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/algopts"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/std/math/emulated/emparams"
+	"github.com/logere/gnark/test"
 )
 
 var testCurve = ecc.BN254

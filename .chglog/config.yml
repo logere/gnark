@@ -2,7 +2,7 @@ style: github
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://github.com/zilong-dai/gnark
+  repository_url: https://github.com/logere/gnark
 options:
   commits:
     # filters:

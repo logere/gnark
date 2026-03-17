@@ -8,13 +8,13 @@ import (
 
 	"github.com/blang/semver/v4"
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/debug"
-	"github.com/zilong-dai/gnark/internal/tinyfield"
-	"github.com/zilong-dai/gnark/internal/utils"
-	"github.com/zilong-dai/gnark/logger"
-	"github.com/zilong-dai/gnark/profile"
+	"github.com/logere/gnark"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/debug"
+	"github.com/logere/gnark/internal/tinyfield"
+	"github.com/logere/gnark/internal/utils"
+	"github.com/logere/gnark/logger"
+	"github.com/logere/gnark/profile"
 )
 
 type SystemType uint16

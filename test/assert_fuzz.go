@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/frontend/schema"
+	"github.com/logere/gnark"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/frontend/schema"
 )
 
 var seedCorpus []*big.Int

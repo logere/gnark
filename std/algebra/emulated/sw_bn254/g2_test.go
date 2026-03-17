@@ -6,8 +6,8 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/bn254"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/test"
 )
 
 type addG2Circuit struct {

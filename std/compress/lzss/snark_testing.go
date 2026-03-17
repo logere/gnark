@@ -2,9 +2,9 @@ package lzss
 
 import (
 	"github.com/consensys/compress/lzss"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/compress"
-	test_vector_utils "github.com/zilong-dai/gnark/std/utils/test_vectors_utils"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/compress"
+	test_vector_utils "github.com/logere/gnark/std/utils/test_vectors_utils"
 )
 
 type DecompressionTestCircuit struct {

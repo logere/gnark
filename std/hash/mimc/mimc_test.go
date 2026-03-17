@@ -22,8 +22,8 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/hash"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/test"
 )
 
 type mimcCircuit struct {

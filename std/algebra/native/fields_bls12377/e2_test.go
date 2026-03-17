@@ -23,8 +23,8 @@ import (
 	bls12377 "github.com/consensys/gnark-crypto/ecc/bls12-377"
 	"github.com/consensys/gnark-crypto/ecc/bls12-377/fp"
 	"github.com/consensys/gnark-crypto/ecc/bw6-761/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/test"
 )
 
 type e2Add struct {

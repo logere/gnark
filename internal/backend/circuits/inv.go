@@ -4,7 +4,7 @@ import (
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/zilong-dai/gnark/frontend"
+	"github.com/logere/gnark/frontend"
 )
 
 type invCircuit struct {

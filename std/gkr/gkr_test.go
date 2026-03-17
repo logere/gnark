@@ -9,13 +9,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/frontend"
-	fiatshamir "github.com/zilong-dai/gnark/std/fiat-shamir"
-	"github.com/zilong-dai/gnark/std/polynomial"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/frontend"
+	fiatshamir "github.com/logere/gnark/std/fiat-shamir"
+	"github.com/logere/gnark/std/polynomial"
+	"github.com/logere/gnark/test"
 
-	"github.com/zilong-dai/gnark/std/hash"
+	"github.com/logere/gnark/std/hash"
 )
 
 func TestGkrVectors(t *testing.T) {

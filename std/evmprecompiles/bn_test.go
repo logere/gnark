@@ -8,11 +8,11 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/bn254"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
-	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_bn254"
-	"github.com/zilong-dai/gnark/std/algebra/emulated/sw_emulated"
-	"github.com/zilong-dai/gnark/std/math/emulated"
-	"github.com/zilong-dai/gnark/test"
+	"github.com/logere/gnark/frontend"
+	"github.com/logere/gnark/std/algebra/emulated/sw_bn254"
+	"github.com/logere/gnark/std/algebra/emulated/sw_emulated"
+	"github.com/logere/gnark/std/math/emulated"
+	"github.com/logere/gnark/test"
 )
 
 type ecaddCircuit struct {

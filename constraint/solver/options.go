@@ -5,7 +5,7 @@ import (
 	"runtime"
 
 	"github.com/rs/zerolog"
-	"github.com/zilong-dai/gnark/logger"
+	"github.com/logere/gnark/logger"
 )
 
 // Option defines option for altering the behavior of a constraint system

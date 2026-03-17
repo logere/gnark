@@ -5,12 +5,12 @@ import (
 	"math/big"
 	"math/bits"
 
-	"github.com/zilong-dai/gnark/constraint"
-	"github.com/zilong-dai/gnark/constraint/solver"
-	"github.com/zilong-dai/gnark/frontend"
-	fiatshamir "github.com/zilong-dai/gnark/std/fiat-shamir"
-	"github.com/zilong-dai/gnark/std/hash"
-	"github.com/zilong-dai/gnark/std/utils/algo_utils"
+	"github.com/logere/gnark/constraint"
+	"github.com/logere/gnark/constraint/solver"
+	"github.com/logere/gnark/frontend"
+	fiatshamir "github.com/logere/gnark/std/fiat-shamir"
+	"github.com/logere/gnark/std/hash"
+	"github.com/logere/gnark/std/utils/algo_utils"
 )
 
 type circuitDataForSnark struct {

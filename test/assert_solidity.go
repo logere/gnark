@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	fr_bn254 "github.com/consensys/gnark-crypto/ecc/bn254/fr"
-	"github.com/zilong-dai/gnark/backend"
-	"github.com/zilong-dai/gnark/backend/witness"
+	"github.com/logere/gnark/backend"
+	"github.com/logere/gnark/backend/witness"
 )
 
 type verifyingKey interface {
