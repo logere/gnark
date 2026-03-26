@@ -796,10 +796,8 @@ func (builder *builder) Compiler() frontend.Compiler {
 // 	return res, nil
 // }
 
-func (builder *builder) Check(v frontend.Variable, bits int) {
-	// todo()!
-	size := v.(int)
-	builder.AssertIsLessOrEqual(size, bits)
+func (builder *builder) Check(v frontend.Variable, nbBits int) {
+	bits.ToBinary(builder, v, bits.WithNbDigits(nbBits))
 }
 
 func (builder *builder) wireIDsToVars(wireIDs ...[]int) []frontend.Variable {
