@@ -13,20 +13,8 @@ func init() {
 
 func GetHints() []solver.Hint {
 	return []solver.Hint{
-		andHint,
-		xorHint,
 		toBytes,
 	}
-}
-
-func xorHint(_ *big.Int, inputs, outputs []*big.Int) error {
-	outputs[0].Xor(inputs[0], inputs[1])
-	return nil
-}
-
-func andHint(_ *big.Int, inputs, outputs []*big.Int) error {
-	outputs[0].And(inputs[0], inputs[1])
-	return nil
 }
 
 func toBytes(m *big.Int, inputs []*big.Int, outputs []*big.Int) error {

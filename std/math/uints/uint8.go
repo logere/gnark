@@ -23,10 +23,8 @@
 package uints
 
 import (
-	"fmt"
-
 	"github.com/zilong-dai/gnark/frontend"
-	"github.com/zilong-dai/gnark/std/internal/logderivprecomp"
+	"github.com/zilong-dai/gnark/std/math/bits"
 	"github.com/zilong-dai/gnark/std/math/bitslice"
 	"github.com/zilong-dai/gnark/std/rangecheck"
 )
@@ -83,31 +81,16 @@ type U32 [4]U8
 type Long interface{ U32 | U64 }
 
 type BinaryField[T U32 | U64] struct {
-	api        frontend.API
-	xorT, andT *logderivprecomp.Precomputed
-	rchecker   frontend.Rangechecker
-	allOne     U8
+	api      frontend.API
+	rchecker frontend.Rangechecker
 }
 
 func New[T Long](api frontend.API) (*BinaryField[T], error) {
-	xorT, err := logderivprecomp.New(api, xorHint, []uint{8})
-	if err != nil {
-		return nil, fmt.Errorf("new xor table: %w", err)
-	}
-	andT, err := logderivprecomp.New(api, andHint, []uint{8})
-	if err != nil {
-		return nil, fmt.Errorf("new and table: %w", err)
-	}
 	rchecker := rangecheck.New(api)
 	bf := &BinaryField[T]{
 		api:      api,
-		xorT:     xorT,
-		andT:     andT,
 		rchecker: rchecker,
 	}
-	// TODO: this is const. add way to init constants
-	allOne := bf.ByteValueOf(0xff)
-	bf.allOne = allOne
 	return bf, nil
 }
 
@@ -222,34 +205,80 @@ func (bf *BinaryField[T]) UnpackLSB(a T) []U8 {
 	return ret
 }
 
-func (bf *BinaryField[T]) twoArgFn(tbl *logderivprecomp.Precomputed, a ...U8) U8 {
-	ret := tbl.Query(a[0].Val, a[1].Val)[0]
-	for i := 2; i < len(a); i++ {
-		ret = tbl.Query(ret, a[i].Val)[0]
-	}
-	return U8{Val: ret}
+// byteToBits decomposes a U8 into 8 bit variables.
+func (bf *BinaryField[T]) byteToBits(a U8) []frontend.Variable {
+	return bits.ToBinary(bf.api, a.Val, bits.WithNbDigits(8))
 }
 
-func (bf *BinaryField[T]) twoArgWideFn(tbl *logderivprecomp.Precomputed, a ...T) T {
+// bitsToByteVal recomposes 8 bit variables into a single byte value.
+func (bf *BinaryField[T]) bitsToByteVal(b []frontend.Variable) frontend.Variable {
+	return bits.FromBinary(bf.api, b, bits.WithUnconstrainedInputs())
+}
+
+// xorBytes computes XOR of two bytes via bitwise decomposition.
+// Per bit: xor(a, b) = a + b - 2*a*b
+func (bf *BinaryField[T]) xorBytes(a, b U8) U8 {
+	aBits := bf.byteToBits(a)
+	bBits := bf.byteToBits(b)
+	rBits := make([]frontend.Variable, 8)
+	for i := 0; i < 8; i++ {
+		ab := bf.api.Mul(aBits[i], bBits[i])
+		rBits[i] = bf.api.Sub(bf.api.Add(aBits[i], bBits[i]), bf.api.Mul(2, ab))
+	}
+	return U8{Val: bf.bitsToByteVal(rBits), internal: true}
+}
+
+// andBytes computes AND of two bytes via bitwise decomposition.
+// Per bit: and(a, b) = a * b
+func (bf *BinaryField[T]) andBytes(a, b U8) U8 {
+	aBits := bf.byteToBits(a)
+	bBits := bf.byteToBits(b)
+	rBits := make([]frontend.Variable, 8)
+	for i := 0; i < 8; i++ {
+		rBits[i] = bf.api.Mul(aBits[i], bBits[i])
+	}
+	return U8{Val: bf.bitsToByteVal(rBits), internal: true}
+}
+
+// notByte computes NOT of a single byte via bitwise decomposition.
+// Per bit: not(a) = 1 - a
+func (bf *BinaryField[T]) notByte(a U8) U8 {
+	aBits := bf.byteToBits(a)
+	rBits := make([]frontend.Variable, 8)
+	for i := 0; i < 8; i++ {
+		rBits[i] = bf.api.Sub(1, aBits[i])
+	}
+	return U8{Val: bf.bitsToByteVal(rBits), internal: true}
+}
+
+func (bf *BinaryField[T]) And(a ...T) T {
 	var r T
 	for i, v := range reslice(a) {
-		r[i] = bf.twoArgFn(tbl, v...)
+		res := v[0]
+		for j := 1; j < len(v); j++ {
+			res = bf.andBytes(res, v[j])
+		}
+		r[i] = res
 	}
 	return r
 }
 
-func (bf *BinaryField[T]) And(a ...T) T { return bf.twoArgWideFn(bf.andT, a...) }
-func (bf *BinaryField[T]) Xor(a ...T) T { return bf.twoArgWideFn(bf.xorT, a...) }
-
-func (bf *BinaryField[T]) not(a U8) U8 {
-	ret := bf.xorT.Query(a.Val, bf.allOne.Val)
-	return U8{Val: ret[0]}
+func (bf *BinaryField[T]) Xor(a ...T) T {
+	var r T
+	for i, v := range reslice(a) {
+		res := v[0]
+		for j := 1; j < len(v); j++ {
+			res = bf.xorBytes(res, v[j])
+		}
+		r[i] = res
+	}
+	return r
 }
 
 func (bf *BinaryField[T]) Not(a T) T {
 	var r T
 	for i := 0; i < len(a); i++ {
-		r[i] = bf.not(a[i])
+		r[i] = bf.notByte(a[i])
 	}
 	return r
 }
