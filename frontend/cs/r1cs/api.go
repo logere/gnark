@@ -800,6 +800,10 @@ func (builder *builder) Commit(v ...frontend.Variable) (frontend.Variable, error
 	return res, nil
 }
 
+func (builder *builder) Check(v frontend.Variable, nbBits int) {
+	bits.ToBinary(builder, v, bits.WithNbDigits(nbBits))
+}
+
 func (builder *builder) wireIDsToVars(wireIDs ...[]int) []frontend.Variable {
 	n := 0
 	for i := range wireIDs {
