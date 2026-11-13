@@ -20,6 +20,7 @@
 package uints
 
 import (
+	"github.com/zilong-dai/gnark/constraint"
 	"github.com/zilong-dai/gnark/frontend"
 	"github.com/zilong-dai/gnark/std/math/bits"
 	"github.com/zilong-dai/gnark/std/math/bitslice"
@@ -62,6 +63,19 @@ import (
 type U8 struct {
 	Val      frontend.Variable
 	internal bool
+	cache    *byteCache
+}
+
+// A non-zero-sized owner makes the cache specific to one BinaryField instance.
+// In particular, cached wires cannot be reused by another circuit builder.
+type byteCacheOwner struct{ marker byte }
+
+// bits are already constrained Boolean expressions produced by this package.
+// key is an immutable encoding of Val at the time those bits were created.
+type byteCache struct {
+	owner *byteCacheOwner
+	bits  []frontend.Variable
+	key   []uint32
 }
 
 // GnarkInitHook describes how to initialise the element.
@@ -78,6 +92,7 @@ type U32 [4]U8
 type Long interface{ U32 | U64 }
 
 type BinaryField[T U32 | U64] struct {
+	owner    *byteCacheOwner
 	api      frontend.API
 	rchecker frontend.Rangechecker
 }
@@ -85,6 +100,7 @@ type BinaryField[T U32 | U64] struct {
 func New[T Long](api frontend.API) (*BinaryField[T], error) {
 	rchecker := rangecheck.New(api)
 	bf := &BinaryField[T]{
+		owner:    &byteCacheOwner{},
 		api:      api,
 		rchecker: rchecker,
 	}
@@ -202,9 +218,45 @@ func (bf *BinaryField[T]) UnpackLSB(a T) []U8 {
 	return ret
 }
 
-// byteToBits decomposes a U8 into 8 bit variables.
+// byteToBits reuses constrained bits only while both the BinaryField and Val
+// match. Val is exported and callers may replace or mutate its expression.
 func (bf *BinaryField[T]) byteToBits(a U8) []frontend.Variable {
+	if a.cache != nil && a.cache.owner == bf.owner && len(a.cache.bits) == 8 {
+		var current []uint32
+		bf.api.Compiler().ToCanonicalVariable(a.Val).Compress(&current)
+		same := len(current) == len(a.cache.key)
+		if same {
+			for i := range current {
+				if current[i] != a.cache.key[i] {
+					same = false
+					break
+				}
+			}
+		}
+		if same {
+			return a.cache.bits
+		}
+	}
 	return bits.ToBinary(bf.api, a.Val, bits.WithNbDigits(8))
+}
+
+// bitsToCachedByte is used only with Boolean bits derived from checked inputs.
+func (bf *BinaryField[T]) bitsToCachedByte(b []frontend.Variable) U8 {
+	if len(b) != 8 {
+		panic("expected eight byte bits")
+	}
+	value := bf.bitsToByteVal(b)
+	canonical := bf.api.Compiler().ToCanonicalVariable(value)
+	// Only reuse encodings whose exact wire/coefficients are known. Other
+	// builders still use the normal constrained decomposition on each access.
+	switch canonical.(type) {
+	case constraint.LinearExpression, constraint.Term:
+	default:
+		return U8{Val: value, internal: true}
+	}
+	var key []uint32
+	canonical.Compress(&key)
+	return U8{Val: value, internal: true, cache: &byteCache{owner: bf.owner, bits: append([]frontend.Variable(nil), b...), key: key}}
 }
 
 // bitsToByteVal recomposes 8 bit variables into a single byte value.
@@ -222,7 +274,7 @@ func (bf *BinaryField[T]) xorBytes(a, b U8) U8 {
 		ab := bf.api.Mul(aBits[i], bBits[i])
 		rBits[i] = bf.api.Sub(bf.api.Add(aBits[i], bBits[i]), bf.api.Mul(2, ab))
 	}
-	return U8{Val: bf.bitsToByteVal(rBits), internal: true}
+	return bf.bitsToCachedByte(rBits)
 }
 
 // andBytes computes AND of two bytes via bitwise decomposition.
@@ -234,7 +286,7 @@ func (bf *BinaryField[T]) andBytes(a, b U8) U8 {
 	for i := 0; i < 8; i++ {
 		rBits[i] = bf.api.Mul(aBits[i], bBits[i])
 	}
-	return U8{Val: bf.bitsToByteVal(rBits), internal: true}
+	return bf.bitsToCachedByte(rBits)
 }
 
 // notByte computes NOT of a single byte via bitwise decomposition.
@@ -245,7 +297,7 @@ func (bf *BinaryField[T]) notByte(a U8) U8 {
 	for i := 0; i < 8; i++ {
 		rBits[i] = bf.api.Sub(1, aBits[i])
 	}
-	return U8{Val: bf.bitsToByteVal(rBits), internal: true}
+	return bf.bitsToCachedByte(rBits)
 }
 
 func (bf *BinaryField[T]) And(a ...T) T {
@@ -292,30 +344,22 @@ func (bf *BinaryField[T]) Add(a ...T) T {
 }
 
 func (bf *BinaryField[T]) Lrot(a T, c int) T {
-	l := len(a)
-	if c < 0 {
-		c = l*8 + c
-	}
-	shiftBl := c / 8
-	shiftBt := c % 8
-	revShiftBt := 8 - shiftBt
-	if revShiftBt == 8 {
-		revShiftBt = 0
-	}
-	partitioned := make([][2]frontend.Variable, l)
-	for i := range partitioned {
-		lower, upper := bitslice.Partition(bf.api, a[i].Val, uint(revShiftBt), bitslice.WithNbDigits(8))
-		partitioned[i] = [2]frontend.Variable{lower, upper}
-	}
-	var ret T
-	for i := 0; i < l; i++ {
-		if shiftBt != 0 {
-			ret[(i+shiftBl)%l].Val = bf.api.Add(bf.api.Mul(1<<(shiftBt), partitioned[i][0]), partitioned[(i+l-1)%l][1])
-		} else {
-			ret[(i+shiftBl)%l].Val = partitioned[i][1]
+	// Rotating a checked bit vector is a permutation and needs no new bit
+	// witnesses. Cache the resulting bytes for subsequent bit operations.
+	width := len(a) * 8
+	c = ((c % width) + width) % width
+	outBits := make([]frontend.Variable, width)
+	for i := 0; i < len(a); i++ {
+		in := bf.byteToBits(a[i])
+		for j := 0; j < 8; j++ {
+			outBits[(8*i+j+c)%width] = in[j]
 		}
 	}
-	return ret
+	var out T
+	for i := 0; i < len(a); i++ {
+		out[i] = bf.bitsToCachedByte(outBits[8*i : 8*i+8])
+	}
+	return out
 }
 
 func (bf *BinaryField[T]) Rshift(a T, c int) T {
