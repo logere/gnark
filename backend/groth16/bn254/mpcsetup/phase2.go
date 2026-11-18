@@ -20,11 +20,13 @@ import (
 	"crypto/sha256"
 	"errors"
 	"math/big"
+	"runtime"
 
 	curve "github.com/consensys/gnark-crypto/ecc/bn254"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	"github.com/zilong-dai/gnark/constraint"
 	cs "github.com/zilong-dai/gnark/constraint/bn254"
+	"github.com/zilong-dai/gnark/internal/utils"
 )
 
 type Phase2Evaluations struct {
@@ -196,14 +198,22 @@ func (c *Phase2) Contribute() {
 	c.Parameters.G2.Delta.ScalarMultiplication(&c.Parameters.G2.Delta, &deltaBI)
 
 	// Update Z using δ⁻¹
-	for i := 0; i < len(c.Parameters.G1.Z); i++ {
-		c.Parameters.G1.Z[i].ScalarMultiplication(&c.Parameters.G1.Z[i], &deltaInvBI)
-	}
+	utils.Parallelize(len(c.Parameters.G1.Z), func(start, end int) {
+		var inverse big.Int
+		inverse.Set(&deltaInvBI)
+		for i := start; i < end; i++ {
+			c.Parameters.G1.Z[i].ScalarMultiplication(&c.Parameters.G1.Z[i], &inverse)
+		}
+	}, runtime.GOMAXPROCS(0))
 
 	// Update L using δ⁻¹
-	for i := 0; i < len(c.Parameters.G1.L); i++ {
-		c.Parameters.G1.L[i].ScalarMultiplication(&c.Parameters.G1.L[i], &deltaInvBI)
-	}
+	utils.Parallelize(len(c.Parameters.G1.L), func(start, end int) {
+		var inverse big.Int
+		inverse.Set(&deltaInvBI)
+		for i := start; i < end; i++ {
+			c.Parameters.G1.L[i].ScalarMultiplication(&c.Parameters.G1.L[i], &inverse)
+		}
+	}, runtime.GOMAXPROCS(0))
 
 	// 4. Hash contribution
 	c.Hash = c.hash()

@@ -158,11 +158,22 @@ func difFFTG1(a []curve.G1Affine, twiddles [][]fr.Element, stage, maxSplits int,
 
 	butterflyG1(&a[0], &a[m])
 
-	var twiddle big.Int
-	for i := 1; i < m; i++ {
-		butterflyG1(&a[i], &a[i+m])
-		twiddles[stage][i].BigInt(&twiddle)
-		a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+	if stage == 0 && m >= 512 {
+		utils.Parallelize(m-1, func(start, end int) {
+			var twiddle big.Int
+			for i := start + 1; i < end + 1; i++ {
+				butterflyG1(&a[i], &a[i+m])
+				twiddles[stage][i].BigInt(&twiddle)
+				a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+			}
+		}, runtime.GOMAXPROCS(0))
+	} else {
+		var twiddle big.Int
+		for i := 1; i < m; i++ {
+			butterflyG1(&a[i], &a[i+m])
+			twiddles[stage][i].BigInt(&twiddle)
+			a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+		}
 	}
 
 	if m == 1 {
@@ -196,11 +207,22 @@ func difFFTG2(a []curve.G2Affine, twiddles [][]fr.Element, stage, maxSplits int,
 
 	butterflyG2(&a[0], &a[m])
 
-	var twiddle big.Int
-	for i := 1; i < m; i++ {
-		butterflyG2(&a[i], &a[i+m])
-		twiddles[stage][i].BigInt(&twiddle)
-		a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+	if stage == 0 && m >= 512 {
+		utils.Parallelize(m-1, func(start, end int) {
+			var twiddle big.Int
+			for i := start + 1; i < end + 1; i++ {
+				butterflyG2(&a[i], &a[i+m])
+				twiddles[stage][i].BigInt(&twiddle)
+				a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+			}
+		}, runtime.GOMAXPROCS(0))
+	} else {
+		var twiddle big.Int
+		for i := 1; i < m; i++ {
+			butterflyG2(&a[i], &a[i+m])
+			twiddles[stage][i].BigInt(&twiddle)
+			a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+		}
 	}
 
 	if m == 1 {
