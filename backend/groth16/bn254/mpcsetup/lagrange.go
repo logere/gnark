@@ -23,220 +23,563 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	curve "github.com/consensys/gnark-crypto/ecc/bn254"
+	"github.com/consensys/gnark-crypto/ecc/bn254/fp"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr/fft"
 	"github.com/zilong-dai/gnark/internal/utils"
 )
 
-// TODO use gnark-crypto for this op
-func lagrangeCoeffsG1(powers []curve.G1Affine, size int) []curve.G1Affine {
-	coeffs := make([]curve.G1Affine, size)
-	copy(coeffs, powers[:size])
-	domain := fft.NewDomain(uint64(size))
-	numCPU := uint64(runtime.NumCPU())
-	maxSplits := bits.TrailingZeros64(ecc.NextPowerOfTwo(numCPU))
+// glvDigits stores a signed 2-dimensional GLV decomposition s = k1 + k2·λ (mod r)
+// with k1, k2 as little-endian 256-bit words of their absolute values.
+type glvDigits struct {
+	k1, k2     [4]uint64
+	neg1, neg2 bool
+}
 
-	twiddlesInv, _ := domain.TwiddlesInv()
-	difFFTG1(coeffs, twiddlesInv, 0, maxSplits, nil)
-	bitReverse(coeffs)
+var (
+	glvBasis       ecc.Lattice
+	thirdRootOneG1 fp.Element
+	thirdRootOneG2 fp.Element
+)
 
-	var invBigint big.Int
-	domain.CardinalityInv.BigInt(&invBigint)
+func init() {
+	// BN254 GLV parameters, identical to the unexported constants in gnark-crypto:
+	// λ = 36x₀³+18x₀²+6x₀+1 with x₀ = 4965661367192848881, and the third roots of
+	// unity defining the endomorphisms on G1 and G2.
+	var lambda big.Int
+	lambda.SetString("4407920970296243842393367215006156084916469457145843978461", 10)
+	ecc.PrecomputeLattice(fr.Modulus(), &lambda, &glvBasis)
+	thirdRootOneG1.SetString("2203960485148121921418603742825762020974279258880205651966")
+	thirdRootOneG2.Square(&thirdRootOneG1)
+}
 
-	utils.Parallelize(size, func(start, end int) {
-		for i := start; i < end; i++ {
-			coeffs[i].ScalarMultiplication(&coeffs[i], &invBigint)
+func splitScalar(s *big.Int) glvDigits {
+	k := ecc.SplitScalar(s, &glvBasis)
+	var d glvDigits
+	if k[0].Sign() < 0 {
+		d.neg1 = true
+		k[0].Neg(&k[0])
+	}
+	if k[1].Sign() < 0 {
+		d.neg2 = true
+		k[1].Neg(&k[1])
+	}
+	setWords(&d.k1, &k[0])
+	setWords(&d.k2, &k[1])
+	return d
+}
+
+func setWords(dst *[4]uint64, v *big.Int) {
+	for i, w := range v.Bits() {
+		if i == 4 {
+			break
 		}
-	})
-	return coeffs
+		dst[i] = uint64(w)
+	}
 }
 
-// TODO use gnark-crypto for this op
-func lagrangeCoeffsG2(powers []curve.G2Affine, size int) []curve.G2Affine {
-	coeffs := make([]curve.G2Affine, size)
-	copy(coeffs, powers[:size])
-	domain := fft.NewDomain(uint64(size))
-	numCPU := uint64(runtime.NumCPU())
-	maxSplits := bits.TrailingZeros64(ecc.NextPowerOfTwo(numCPU))
+// windowBits returns the 2-bit window of k starting at bit position 2*w.
+func windowBits(k *[4]uint64, w int) uint64 {
+	// 2w is always even, so the window never straddles a word boundary.
+	word := uint(w) >> 5
+	off := uint(2*w) & 63
+	return (k[word] >> off) & 3
+}
 
-	twiddlesInv, _ := domain.TwiddlesInv()
-	difFFTG2(coeffs, twiddlesInv, 0, maxSplits, nil)
-	bitReverse(coeffs)
-
-	var invBigint big.Int
-	domain.CardinalityInv.BigInt(&invBigint)
-
-	utils.Parallelize(size, func(start, end int) {
-		for i := start; i < end; i++ {
-			coeffs[i].ScalarMultiplication(&coeffs[i], &invBigint)
+func bitLen(w [4]uint64) int {
+	for i := 3; i >= 0; i-- {
+		if w[i] != 0 {
+			return 64*i + bits.Len64(w[i])
 		}
-	})
-	return coeffs
+	}
+	return 0
 }
 
-func butterflyG1(a *curve.G1Affine, b *curve.G1Affine) {
-	t := *a
-	a.Add(a, b)
-	b.Sub(&t, b)
-}
+// mulByDigitsG1 computes res = a ⋅ s where s is given by its precomputed GLV
+// decomposition. It mirrors gnark-crypto's windowed mulGLV without redoing the
+// scalar splitting, and keeps the result in Jacobian coordinates.
+func mulByDigitsG1(res *curve.G1Jac, a *curve.G1Jac, d *glvDigits) {
+	var table [15]curve.G1Jac
 
-func butterflyG2(a *curve.G2Affine, b *curve.G2Affine) {
-	t := *a
-	a.Add(a, b)
-	b.Sub(&t, b)
-}
+	// table[b3b2b1b0-1] = b3b2 ⋅ ϕ(a) + b1b0 ⋅ a
+	table[0].Set(a)
+	table[3].Set(a)
+	table[3].X.Mul(&table[3].X, &thirdRootOneG1)
 
-// kerDIF8 is a kernel that process a FFT of size 8
-func kerDIF8G1(a []curve.G1Affine, twiddles [][]fr.Element, stage int) {
-	butterflyG1(&a[0], &a[4])
-	butterflyG1(&a[1], &a[5])
-	butterflyG1(&a[2], &a[6])
-	butterflyG1(&a[3], &a[7])
-
-	var twiddle big.Int
-	twiddles[stage+0][1].BigInt(&twiddle)
-	a[5].ScalarMultiplication(&a[5], &twiddle)
-	twiddles[stage+0][2].BigInt(&twiddle)
-	a[6].ScalarMultiplication(&a[6], &twiddle)
-	twiddles[stage+0][3].BigInt(&twiddle)
-	a[7].ScalarMultiplication(&a[7], &twiddle)
-	butterflyG1(&a[0], &a[2])
-	butterflyG1(&a[1], &a[3])
-	butterflyG1(&a[4], &a[6])
-	butterflyG1(&a[5], &a[7])
-	twiddles[stage+1][1].BigInt(&twiddle)
-	a[3].ScalarMultiplication(&a[3], &twiddle)
-	twiddles[stage+1][1].BigInt(&twiddle)
-	a[7].ScalarMultiplication(&a[7], &twiddle)
-	butterflyG1(&a[0], &a[1])
-	butterflyG1(&a[2], &a[3])
-	butterflyG1(&a[4], &a[5])
-	butterflyG1(&a[6], &a[7])
-}
-
-// kerDIF8 is a kernel that process a FFT of size 8
-func kerDIF8G2(a []curve.G2Affine, twiddles [][]fr.Element, stage int) {
-	butterflyG2(&a[0], &a[4])
-	butterflyG2(&a[1], &a[5])
-	butterflyG2(&a[2], &a[6])
-	butterflyG2(&a[3], &a[7])
-
-	var twiddle big.Int
-	twiddles[stage+0][1].BigInt(&twiddle)
-	a[5].ScalarMultiplication(&a[5], &twiddle)
-	twiddles[stage+0][2].BigInt(&twiddle)
-	a[6].ScalarMultiplication(&a[6], &twiddle)
-	twiddles[stage+0][3].BigInt(&twiddle)
-	a[7].ScalarMultiplication(&a[7], &twiddle)
-	butterflyG2(&a[0], &a[2])
-	butterflyG2(&a[1], &a[3])
-	butterflyG2(&a[4], &a[6])
-	butterflyG2(&a[5], &a[7])
-	twiddles[stage+1][1].BigInt(&twiddle)
-	a[3].ScalarMultiplication(&a[3], &twiddle)
-	twiddles[stage+1][1].BigInt(&twiddle)
-	a[7].ScalarMultiplication(&a[7], &twiddle)
-	butterflyG2(&a[0], &a[1])
-	butterflyG2(&a[2], &a[3])
-	butterflyG2(&a[4], &a[5])
-	butterflyG2(&a[6], &a[7])
-}
-
-func difFFTG1(a []curve.G1Affine, twiddles [][]fr.Element, stage, maxSplits int, chDone chan struct{}) {
-	if chDone != nil {
-		defer close(chDone)
+	if d.neg1 {
+		table[0].Neg(&table[0])
+	}
+	if d.neg2 {
+		table[3].Neg(&table[3])
 	}
 
+	table[1].Double(&table[0])
+	table[2].Set(&table[1]).AddAssign(&table[0])
+	table[4].Set(&table[3]).AddAssign(&table[0])
+	table[5].Set(&table[3]).AddAssign(&table[1])
+	table[6].Set(&table[3]).AddAssign(&table[2])
+	table[7].Double(&table[3])
+	table[8].Set(&table[7]).AddAssign(&table[0])
+	table[9].Set(&table[7]).AddAssign(&table[1])
+	table[10].Set(&table[7]).AddAssign(&table[2])
+	table[11].Set(&table[7]).AddAssign(&table[3])
+	table[12].Set(&table[11]).AddAssign(&table[0])
+	table[13].Set(&table[11]).AddAssign(&table[1])
+	table[14].Set(&table[11]).AddAssign(&table[2])
+
+	maxBit := bitLen(d.k1)
+	if b := bitLen(d.k2); b > maxBit {
+		maxBit = b
+	}
+	if maxBit == 0 {
+		res.X.SetZero()
+		res.Y.SetZero()
+		res.Z.SetZero()
+		return
+	}
+
+	res.X.SetZero()
+	res.Y.SetZero()
+	res.Z.SetZero()
+	// Iterate 2-bit windows from the most significant one. Starting at the
+	// exact top window instead of the top word avoids burning doublings on
+	// leading zero windows.
+	for w := (maxBit - 1) / 2; w >= 0; w-- {
+		res.Double(res).Double(res)
+		b1 := windowBits(&d.k1, w)
+		b2 := windowBits(&d.k2, w)
+		if b1|b2 != 0 {
+			res.AddAssign(&table[(b2<<2|b1)-1])
+		}
+	}
+}
+
+// mulByDigitsG2 is the G2 counterpart of mulByDigitsG1.
+func mulByDigitsG2(res *curve.G2Jac, a *curve.G2Jac, d *glvDigits) {
+	var table [15]curve.G2Jac
+
+	table[0].Set(a)
+	table[3].Set(a)
+	table[3].X.MulByElement(&table[3].X, &thirdRootOneG2)
+
+	if d.neg1 {
+		table[0].Neg(&table[0])
+	}
+	if d.neg2 {
+		table[3].Neg(&table[3])
+	}
+
+	table[1].Double(&table[0])
+	table[2].Set(&table[1]).AddAssign(&table[0])
+	table[4].Set(&table[3]).AddAssign(&table[0])
+	table[5].Set(&table[3]).AddAssign(&table[1])
+	table[6].Set(&table[3]).AddAssign(&table[2])
+	table[7].Double(&table[3])
+	table[8].Set(&table[7]).AddAssign(&table[0])
+	table[9].Set(&table[7]).AddAssign(&table[1])
+	table[10].Set(&table[7]).AddAssign(&table[2])
+	table[11].Set(&table[7]).AddAssign(&table[3])
+	table[12].Set(&table[11]).AddAssign(&table[0])
+	table[13].Set(&table[11]).AddAssign(&table[1])
+	table[14].Set(&table[11]).AddAssign(&table[2])
+
+	maxBit := bitLen(d.k1)
+	if b := bitLen(d.k2); b > maxBit {
+		maxBit = b
+	}
+	if maxBit == 0 {
+		res.X.SetZero()
+		res.Y.SetZero()
+		res.Z.SetZero()
+		return
+	}
+
+	res.X.SetZero()
+	res.Y.SetZero()
+	res.Z.SetZero()
+	// Iterate 2-bit windows from the most significant one. Starting at the
+	// exact top window instead of the top word avoids burning doublings on
+	// leading zero windows.
+	for w := (maxBit - 1) / 2; w >= 0; w-- {
+		res.Double(res).Double(res)
+		b1 := windowBits(&d.k1, w)
+		b2 := windowBits(&d.k2, w)
+		if b1|b2 != 0 {
+			res.AddAssign(&table[(b2<<2|b1)-1])
+		}
+	}
+}
+
+// twiddleSchedule precomputes the GLV decompositions of every inverse twiddle
+// factor of a given FFT domain, plus the decomposition of the domain
+// cardinality inverse (applied to the accumulation outputs, not here).
+type twiddleSchedule struct {
+	digits         [][]glvDigits
+	cardinalityInv glvDigits
+}
+
+func newTwiddleSchedule(size int) twiddleSchedule {
+	domain := fft.NewDomain(uint64(size))
+	twiddlesInv, err := domain.TwiddlesInv()
+	if err != nil {
+		panic(err)
+	}
+
+	count := 0
+	for _, row := range twiddlesInv {
+		count += len(row)
+	}
+	flatTwiddles := make([]fr.Element, 0, count)
+	for _, row := range twiddlesInv {
+		flatTwiddles = append(flatTwiddles, row...)
+	}
+	flatDigits := make([]glvDigits, count)
+	utils.Parallelize(count, func(start, end int) {
+		var bi big.Int
+		for i := start; i < end; i++ {
+			flatTwiddles[i].BigInt(&bi)
+			flatDigits[i] = splitScalar(&bi)
+		}
+	})
+	digits := make([][]glvDigits, len(twiddlesInv))
+	offset := 0
+	for s, row := range twiddlesInv {
+		digits[s] = flatDigits[offset : offset+len(row)]
+		offset += len(row)
+	}
+
+	var cardinalityInvBI big.Int
+	domain.CardinalityInv.BigInt(&cardinalityInvBI)
+
+	return twiddleSchedule{
+		digits:         digits,
+		cardinalityInv: splitScalar(&cardinalityInvBI),
+	}
+}
+
+func butterflyG1Jac(a *curve.G1Jac, b *curve.G1Jac) {
+	t := *a
+	a.AddAssign(b)
+	t.SubAssign(b)
+	*b = t
+}
+
+func butterflyG2Jac(a *curve.G2Jac, b *curve.G2Jac) {
+	t := *a
+	a.AddAssign(b)
+	t.SubAssign(b)
+	*b = t
+}
+
+// kerDIF8G1Jac processes a FFT of size 8 in Jacobian coordinates.
+func kerDIF8G1Jac(a []curve.G1Jac, digits [][]glvDigits, stage int) {
+	butterflyG1Jac(&a[0], &a[4])
+	butterflyG1Jac(&a[1], &a[5])
+	butterflyG1Jac(&a[2], &a[6])
+	butterflyG1Jac(&a[3], &a[7])
+
+	mulByDigitsG1(&a[5], &a[5], &digits[stage+0][1])
+	mulByDigitsG1(&a[6], &a[6], &digits[stage+0][2])
+	mulByDigitsG1(&a[7], &a[7], &digits[stage+0][3])
+	butterflyG1Jac(&a[0], &a[2])
+	butterflyG1Jac(&a[1], &a[3])
+	butterflyG1Jac(&a[4], &a[6])
+	butterflyG1Jac(&a[5], &a[7])
+	mulByDigitsG1(&a[3], &a[3], &digits[stage+1][1])
+	mulByDigitsG1(&a[7], &a[7], &digits[stage+1][1])
+	butterflyG1Jac(&a[0], &a[1])
+	butterflyG1Jac(&a[2], &a[3])
+	butterflyG1Jac(&a[4], &a[5])
+	butterflyG1Jac(&a[6], &a[7])
+}
+
+// kerDIF8G2Jac processes a FFT of size 8 in Jacobian coordinates.
+func kerDIF8G2Jac(a []curve.G2Jac, digits [][]glvDigits, stage int) {
+	butterflyG2Jac(&a[0], &a[4])
+	butterflyG2Jac(&a[1], &a[5])
+	butterflyG2Jac(&a[2], &a[6])
+	butterflyG2Jac(&a[3], &a[7])
+
+	mulByDigitsG2(&a[5], &a[5], &digits[stage+0][1])
+	mulByDigitsG2(&a[6], &a[6], &digits[stage+0][2])
+	mulByDigitsG2(&a[7], &a[7], &digits[stage+0][3])
+	butterflyG2Jac(&a[0], &a[2])
+	butterflyG2Jac(&a[1], &a[3])
+	butterflyG2Jac(&a[4], &a[6])
+	butterflyG2Jac(&a[5], &a[7])
+	mulByDigitsG2(&a[3], &a[3], &digits[stage+1][1])
+	mulByDigitsG2(&a[7], &a[7], &digits[stage+1][1])
+	butterflyG2Jac(&a[0], &a[1])
+	butterflyG2Jac(&a[2], &a[3])
+	butterflyG2Jac(&a[4], &a[5])
+	butterflyG2Jac(&a[6], &a[7])
+}
+
+// difFFTG1Jac runs the DIF FFT stage by stage. Every stage is fully
+// parallelized across its butterflies; stages are separated by implicit
+// barriers since each stage consumes the previous stage's outputs.
+func difFFTG1Jac(a []curve.G1Jac, digits [][]glvDigits) {
 	n := len(a)
 	if n == 1 {
 		return
-	} else if n == 8 {
-		kerDIF8G1(a, twiddles, stage)
-		return
 	}
-	m := n >> 1
-
-	butterflyG1(&a[0], &a[m])
-
-	if stage == 0 && m >= 512 {
-		utils.Parallelize(m-1, func(start, end int) {
-			var twiddle big.Int
-			for i := start + 1; i < end + 1; i++ {
-				butterflyG1(&a[i], &a[i+m])
-				twiddles[stage][i].BigInt(&twiddle)
-				a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+	stage := 0
+	for blockSize := n; blockSize > 8; blockSize >>= 1 {
+		m := blockSize >> 1
+		numBlocks := n / blockSize
+		utils.Parallelize(numBlocks*m, func(start, end int) {
+			for t := start; t < end; t++ {
+				i := t % m
+				lo := (t/m)*blockSize + i
+				hi := lo + m
+				butterflyG1Jac(&a[lo], &a[hi])
+				if i != 0 {
+					mulByDigitsG1(&a[hi], &a[hi], &digits[stage][i])
+				}
 			}
 		}, runtime.GOMAXPROCS(0))
-	} else {
-		var twiddle big.Int
-		for i := 1; i < m; i++ {
-			butterflyG1(&a[i], &a[i+m])
-			twiddles[stage][i].BigInt(&twiddle)
-			a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+		stage++
+	}
+	utils.Parallelize(n/8, func(start, end int) {
+		for k := start; k < end; k++ {
+			kerDIF8G1Jac(a[k*8:(k+1)*8], digits, stage)
 		}
-	}
-
-	if m == 1 {
-		return
-	}
-
-	nextStage := stage + 1
-	if stage < maxSplits {
-		chDone := make(chan struct{}, 1)
-		go difFFTG1(a[m:n], twiddles, nextStage, maxSplits, chDone)
-		difFFTG1(a[0:m], twiddles, nextStage, maxSplits, nil)
-		<-chDone
-	} else {
-		difFFTG1(a[0:m], twiddles, nextStage, maxSplits, nil)
-		difFFTG1(a[m:n], twiddles, nextStage, maxSplits, nil)
-	}
+	}, runtime.GOMAXPROCS(0))
 }
-func difFFTG2(a []curve.G2Affine, twiddles [][]fr.Element, stage, maxSplits int, chDone chan struct{}) {
-	if chDone != nil {
-		defer close(chDone)
-	}
 
+// difFFTG2Jac runs the DIF FFT stage by stage. Every stage is fully
+// parallelized across its butterflies; stages are separated by implicit
+// barriers since each stage consumes the previous stage's outputs.
+func difFFTG2Jac(a []curve.G2Jac, digits [][]glvDigits) {
 	n := len(a)
 	if n == 1 {
 		return
-	} else if n == 8 {
-		kerDIF8G2(a, twiddles, stage)
-		return
 	}
-	m := n >> 1
-
-	butterflyG2(&a[0], &a[m])
-
-	if stage == 0 && m >= 512 {
-		utils.Parallelize(m-1, func(start, end int) {
-			var twiddle big.Int
-			for i := start + 1; i < end + 1; i++ {
-				butterflyG2(&a[i], &a[i+m])
-				twiddles[stage][i].BigInt(&twiddle)
-				a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
+	stage := 0
+	for blockSize := n; blockSize > 8; blockSize >>= 1 {
+		m := blockSize >> 1
+		numBlocks := n / blockSize
+		utils.Parallelize(numBlocks*m, func(start, end int) {
+			for t := start; t < end; t++ {
+				i := t % m
+				lo := (t/m)*blockSize + i
+				hi := lo + m
+				butterflyG2Jac(&a[lo], &a[hi])
+				if i != 0 {
+					mulByDigitsG2(&a[hi], &a[hi], &digits[stage][i])
+				}
 			}
 		}, runtime.GOMAXPROCS(0))
-	} else {
-		var twiddle big.Int
-		for i := 1; i < m; i++ {
-			butterflyG2(&a[i], &a[i+m])
-			twiddles[stage][i].BigInt(&twiddle)
-			a[i+m].ScalarMultiplication(&a[i+m], &twiddle)
-		}
+		stage++
 	}
+	utils.Parallelize(n/8, func(start, end int) {
+		for k := start; k < end; k++ {
+			kerDIF8G2Jac(a[k*8:(k+1)*8], digits, stage)
+		}
+	}, runtime.GOMAXPROCS(0))
+}
 
-	if m == 1 {
+// batchJacobToAffineG1 converts src to affine coordinates using one field
+// inversion per chunk instead of one inversion per point.
+func batchJacobToAffineG1(dst []curve.G1Affine, src []curve.G1Jac) {
+	utils.Parallelize(len(src), func(start, end int) {
+		buf := make([]fp.Element, 0, 1024)
+		for chunkStart := start; chunkStart < end; chunkStart += 1024 {
+			chunkEnd := chunkStart + 1024
+			if chunkEnd > end {
+				chunkEnd = end
+			}
+			buf = invertChunkFp(src[chunkStart:chunkEnd], buf)
+			for i := chunkStart; i < chunkEnd; i++ {
+				zInv := &buf[i-chunkStart]
+				if zInv.IsZero() {
+					dst[i].X.SetZero()
+					dst[i].Y.SetZero()
+					continue
+				}
+				var z2 fp.Element
+				z2.Square(zInv)
+				dst[i].X.Mul(&src[i].X, &z2)
+				dst[i].Y.Mul(&src[i].Y, &z2).Mul(&dst[i].Y, zInv)
+			}
+		}
+	})
+}
+
+func batchJacobToAffineG2(dst []curve.G2Affine, src []curve.G2Jac) {
+	utils.Parallelize(len(src), func(start, end int) {
+		buf := make([]curve.E2, 0, 1024)
+		for chunkStart := start; chunkStart < end; chunkStart += 1024 {
+			chunkEnd := chunkStart + 1024
+			if chunkEnd > end {
+				chunkEnd = end
+			}
+			buf = invertChunkE2(src[chunkStart:chunkEnd], buf)
+			for i := chunkStart; i < chunkEnd; i++ {
+				zInv := &buf[i-chunkStart]
+				if zInv.IsZero() {
+					dst[i].X.SetZero()
+					dst[i].Y.SetZero()
+					continue
+				}
+				var z2 curve.E2
+				z2.Square(zInv)
+				dst[i].X.Mul(&src[i].X, &z2)
+				dst[i].Y.Mul(&src[i].Y, &z2).Mul(&dst[i].Y, zInv)
+			}
+		}
+	})
+}
+
+// invertChunkFp returns the inverses of the Z coordinates of chunk using the
+// Montgomery trick: one inversion per chunk. Points at infinity (Z=0) get a
+// zero inverse marker.
+func invertChunkFp(chunk []curve.G1Jac, buf []fp.Element) []fp.Element {
+	buf = buf[:len(chunk)]
+	var acc fp.Element
+	acc.SetOne()
+	for i := range chunk {
+		if chunk[i].Z.IsZero() {
+			buf[i].SetZero()
+			continue
+		}
+		buf[i].Set(&acc)
+		acc.Mul(&acc, &chunk[i].Z)
+	}
+	var inv fp.Element
+	inv.Inverse(&acc)
+	for i := len(chunk) - 1; i >= 0; i-- {
+		if chunk[i].Z.IsZero() {
+			continue
+		}
+		var zInv fp.Element
+		zInv.Mul(&inv, &buf[i])
+		inv.Mul(&inv, &chunk[i].Z)
+		buf[i] = zInv
+	}
+	return buf
+}
+
+func invertChunkE2(chunk []curve.G2Jac, buf []curve.E2) []curve.E2 {
+	buf = buf[:len(chunk)]
+	var acc curve.E2
+	acc.SetOne()
+	for i := range chunk {
+		if chunk[i].Z.IsZero() {
+			buf[i].SetZero()
+			continue
+		}
+		buf[i].Set(&acc)
+		acc.Mul(&acc, &chunk[i].Z)
+	}
+	var inv curve.E2
+	inv.Inverse(&acc)
+	for i := len(chunk) - 1; i >= 0; i-- {
+		if chunk[i].Z.IsZero() {
+			continue
+		}
+		var zInv curve.E2
+		zInv.Mul(&inv, &buf[i])
+		inv.Mul(&inv, &chunk[i].Z)
+		buf[i] = zInv
+	}
+	return buf
+}
+
+// lagrangeCoeffsG1 returns the Lagrange coefficients of the given powers.
+// Unlike a textbook inverse FFT, the cardinality inverse is not applied here;
+// it is folded into the accumulation outputs in InitPhase2.
+func lagrangeCoeffsG1(powers []curve.G1Affine, size int, sched *twiddleSchedule) []curve.G1Affine {
+	coeffs := make([]curve.G1Jac, size)
+	utils.Parallelize(size, func(start, end int) {
+		for i := start; i < end; i++ {
+			coeffs[i].FromAffine(&powers[i])
+		}
+	})
+	difFFTG1Jac(coeffs, sched.digits)
+	bitReverse(coeffs)
+	out := make([]curve.G1Affine, size)
+	batchJacobToAffineG1(out, coeffs)
+	return out
+}
+
+// difFFTG1Jac3 applies the same DIF FFT to three G1 arrays in a single
+// traversal. The three lagrange transforms in InitPhase2 share the domain and
+// twiddle schedule, so one set of stage barriers and one digit read serve all
+// three arrays.
+func difFFTG1Jac3(a, b, c []curve.G1Jac, digits [][]glvDigits) {
+	n := len(a)
+	if n == 1 {
 		return
 	}
-
-	nextStage := stage + 1
-	if stage < maxSplits {
-		chDone := make(chan struct{}, 1)
-		go difFFTG2(a[m:n], twiddles, nextStage, maxSplits, chDone)
-		difFFTG2(a[0:m], twiddles, nextStage, maxSplits, nil)
-		<-chDone
-	} else {
-		difFFTG2(a[0:m], twiddles, nextStage, maxSplits, nil)
-		difFFTG2(a[m:n], twiddles, nextStage, maxSplits, nil)
+	stage := 0
+	for blockSize := n; blockSize > 8; blockSize >>= 1 {
+		m := blockSize >> 1
+		numBlocks := n / blockSize
+		utils.Parallelize(numBlocks*m, func(start, end int) {
+			for t := start; t < end; t++ {
+				i := t % m
+				lo := (t/m)*blockSize + i
+				hi := lo + m
+				butterflyG1Jac(&a[lo], &a[hi])
+				butterflyG1Jac(&b[lo], &b[hi])
+				butterflyG1Jac(&c[lo], &c[hi])
+				if i != 0 {
+					d := &digits[stage][i]
+					mulByDigitsG1(&a[hi], &a[hi], d)
+					mulByDigitsG1(&b[hi], &b[hi], d)
+					mulByDigitsG1(&c[hi], &c[hi], d)
+				}
+			}
+		}, runtime.GOMAXPROCS(0))
+		stage++
 	}
+	utils.Parallelize(n/8, func(start, end int) {
+		for k := start; k < end; k++ {
+			kerDIF8G1Jac(a[k*8:(k+1)*8], digits, stage)
+			kerDIF8G1Jac(b[k*8:(k+1)*8], digits, stage)
+			kerDIF8G1Jac(c[k*8:(k+1)*8], digits, stage)
+		}
+	}, runtime.GOMAXPROCS(0))
+}
+
+// lagrangeCoeffsG1x3 computes lagrangeCoeffsG1 for three inputs in one
+// traversal. See lagrangeCoeffsG1 for the deferred cardinality inverse.
+func lagrangeCoeffsG1x3(powers1, powers2, powers3 []curve.G1Affine, size int, sched *twiddleSchedule) ([]curve.G1Affine, []curve.G1Affine, []curve.G1Affine) {
+	a := make([]curve.G1Jac, size)
+	b := make([]curve.G1Jac, size)
+	c := make([]curve.G1Jac, size)
+	utils.Parallelize(size, func(start, end int) {
+		for i := start; i < end; i++ {
+			a[i].FromAffine(&powers1[i])
+			b[i].FromAffine(&powers2[i])
+			c[i].FromAffine(&powers3[i])
+		}
+	})
+	difFFTG1Jac3(a, b, c, sched.digits)
+	bitReverse(a)
+	bitReverse(b)
+	bitReverse(c)
+	out1 := make([]curve.G1Affine, size)
+	out2 := make([]curve.G1Affine, size)
+	out3 := make([]curve.G1Affine, size)
+	batchJacobToAffineG1(out1, a)
+	batchJacobToAffineG1(out2, b)
+	batchJacobToAffineG1(out3, c)
+	return out1, out2, out3
+}
+
+// lagrangeCoeffsG2 is the G2 counterpart of lagrangeCoeffsG1.
+func lagrangeCoeffsG2(powers []curve.G2Affine, size int, sched *twiddleSchedule) []curve.G2Affine {
+	coeffs := make([]curve.G2Jac, size)
+	utils.Parallelize(size, func(start, end int) {
+		for i := start; i < end; i++ {
+			coeffs[i].FromAffine(&powers[i])
+		}
+	})
+	difFFTG2Jac(coeffs, sched.digits)
+	bitReverse(coeffs)
+	out := make([]curve.G2Affine, size)
+	batchJacobToAffineG2(out, coeffs)
+	return out
 }

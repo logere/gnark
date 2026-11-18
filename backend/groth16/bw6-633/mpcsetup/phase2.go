@@ -21,9 +21,10 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/zilong-dai/gnark/constraint"
+
 	curve "github.com/consensys/gnark-crypto/ecc/bw6-633"
 	"github.com/consensys/gnark-crypto/ecc/bw6-633/fr"
-	"github.com/zilong-dai/gnark/constraint"
 	cs "github.com/zilong-dai/gnark/constraint/bw6-633"
 )
 

@@ -2,7 +2,10 @@ import (
 	"crypto/sha256"
 	"errors"
 	"math/big"
-	{{ if eq .Curve "BN254" }}"runtime"{{ end }}
+	{{ if eq .Curve "BN254" }}"runtime"
+	"sort"
+	"sync"
+	"sync/atomic"{{ end }}
 
 	"github.com/zilong-dai/gnark/constraint"
 	{{ if eq .Curve "BN254" }}"github.com/zilong-dai/gnark/internal/utils"{{ end }}
@@ -13,6 +16,526 @@ import (
 	{{- template "import_backend_cs" . }}
 )
 
+{{ if eq .Curve "BN254" }}
+type Phase2Evaluations struct {
+	G1 struct {
+		A, B, VKK []curve.G1Affine
+	}
+	G2 struct {
+		B []curve.G2Affine
+	}
+}
+
+type Phase2 struct {
+	Parameters struct {
+		G1 struct {
+			Delta curve.G1Affine
+			L, Z  []curve.G1Affine
+		}
+		G2 struct {
+			Delta curve.G2Affine
+		}
+	}
+	PublicKey PublicKey
+	Hash      []byte
+}
+
+// termEntry is one (coefficient, constraint) reference in a per-wire term list.
+type termEntry struct {
+	coeffID         uint32
+	constraintIndex uint32
+}
+
+// wireTerms holds per-wire CSR term lists for one accumulation target.
+type wireTerms struct {
+	offsets []uint32
+	entries []termEntry
+}
+
+func (wt *wireTerms) of(w int) []termEntry {
+	return wt.entries[wt.offsets[w]:wt.offsets[w+1]]
+}
+
+// buildWireTerms assembles per-wire CSR term lists for the six accumulation
+// targets (A, βA, B, B₂, αB, C) in two passes over the constraint set.
+func buildWireTerms(r1cs *cs.R1CS, nWires int) [6]wireTerms {
+	var targets [6]wireTerms
+	counts := make([]uint32, 6*nWires)
+	it := r1cs.GetR1CIterator()
+	for c := it.Next(); c != nil; c = it.Next() {
+		for _, t := range c.L {
+			w := t.WireID()
+			counts[w]++
+			counts[nWires+w]++
+		}
+		for _, t := range c.R {
+			w := t.WireID()
+			counts[2*nWires+w]++
+			counts[3*nWires+w]++
+			counts[4*nWires+w]++
+		}
+		for _, t := range c.O {
+			w := t.WireID()
+			counts[5*nWires+w]++
+		}
+	}
+	cursors := make([]uint32, 6*nWires)
+	for k := 0; k < 6; k++ {
+		offsets := make([]uint32, nWires+1)
+		var sum uint32
+		for w := 0; w < nWires; w++ {
+			offsets[w] = sum
+			sum += counts[k*nWires+w]
+		}
+		offsets[nWires] = sum
+		targets[k].offsets = offsets
+		targets[k].entries = make([]termEntry, sum)
+		copy(cursors[k*nWires:(k+1)*nWires], offsets[:nWires])
+	}
+	i := 0
+	it = r1cs.GetR1CIterator()
+	for c := it.Next(); c != nil; c = it.Next() {
+		for _, t := range c.L {
+			w := t.WireID()
+			e := termEntry{coeffID: uint32(t.CoeffID()), constraintIndex: uint32(i)}
+			for k := 0; k < 2; k++ {
+				p := cursors[k*nWires+w]
+				targets[k].entries[p] = e
+				cursors[k*nWires+w]++
+			}
+		}
+		for _, t := range c.R {
+			w := t.WireID()
+			e := termEntry{coeffID: uint32(t.CoeffID()), constraintIndex: uint32(i)}
+			for k := 2; k < 5; k++ {
+				p := cursors[k*nWires+w]
+				targets[k].entries[p] = e
+				cursors[k*nWires+w]++
+			}
+		}
+		for _, t := range c.O {
+			w := t.WireID()
+			p := cursors[5*nWires+w]
+			targets[5].entries[p] = termEntry{coeffID: uint32(t.CoeffID()), constraintIndex: uint32(i)}
+			cursors[5*nWires+w]++
+		}
+		i++
+	}
+	return targets
+}
+
+// coeffGroupG1 accumulates the points of one coefficient within a wire.
+type coeffGroupG1 struct {
+	coeffID uint32
+	acc     curve.G1Jac
+}
+
+type coeffGroupG2 struct {
+	coeffID uint32
+	acc     curve.G2Jac
+}
+
+const groupLinearMax = 32
+
+// accumulateGroupsG1 multiplies each per-coefficient subtotal once and adds it
+// to acc. Grouping turns one scalar multiplication per term into one per
+// distinct (wire, coefficient) pair.
+func accumulateGroupsG1(acc *curve.G1Jac, groups []coeffGroupG1, terms []termEntry, points []curve.G1Affine, coeffDigits []glvDigits) []coeffGroupG1 {
+	if len(terms) <= groupLinearMax {
+		groups = groups[:0]
+		for _, te := range terms {
+			if accumulateTrivialG1(acc, te, &points[te.constraintIndex]) {
+				continue
+			}
+			idx := -1
+			for j := range groups {
+				if groups[j].coeffID == te.coeffID {
+					idx = j
+					break
+				}
+			}
+			if idx < 0 {
+				groups = append(groups, coeffGroupG1{coeffID: te.coeffID})
+				idx = len(groups) - 1
+			}
+			groups[idx].acc.AddMixed(&points[te.constraintIndex])
+		}
+		for j := range groups {
+			var tmp curve.G1Jac
+			mulByDigitsG1(&tmp, &groups[j].acc, &coeffDigits[groups[j].coeffID])
+			acc.AddAssign(&tmp)
+		}
+		return groups
+	}
+	sorted := make([]termEntry, len(terms))
+	copy(sorted, terms)
+	sort.Slice(sorted, func(a, b int) bool { return sorted[a].coeffID < sorted[b].coeffID })
+	i := 0
+	for i < len(sorted) {
+		te := sorted[i]
+		if accumulateTrivialG1(acc, te, &points[te.constraintIndex]) {
+			i++
+			continue
+		}
+		var group curve.G1Jac
+		j := i
+		for ; j < len(sorted) && sorted[j].coeffID == te.coeffID; j++ {
+			group.AddMixed(&points[sorted[j].constraintIndex])
+		}
+		var tmp curve.G1Jac
+		mulByDigitsG1(&tmp, &group, &coeffDigits[te.coeffID])
+		acc.AddAssign(&tmp)
+		i = j
+	}
+	return groups[:0]
+}
+
+func accumulateGroupsG2(acc *curve.G2Jac, groups []coeffGroupG2, terms []termEntry, points []curve.G2Affine, coeffDigits []glvDigits) []coeffGroupG2 {
+	if len(terms) <= groupLinearMax {
+		groups = groups[:0]
+		for _, te := range terms {
+			if accumulateTrivialG2(acc, te, &points[te.constraintIndex]) {
+				continue
+			}
+			idx := -1
+			for j := range groups {
+				if groups[j].coeffID == te.coeffID {
+					idx = j
+					break
+				}
+			}
+			if idx < 0 {
+				groups = append(groups, coeffGroupG2{coeffID: te.coeffID})
+				idx = len(groups) - 1
+			}
+			groups[idx].acc.AddMixed(&points[te.constraintIndex])
+		}
+		for j := range groups {
+			var tmp curve.G2Jac
+			mulByDigitsG2(&tmp, &groups[j].acc, &coeffDigits[groups[j].coeffID])
+			acc.AddAssign(&tmp)
+		}
+		return groups
+	}
+	sorted := make([]termEntry, len(terms))
+	copy(sorted, terms)
+	sort.Slice(sorted, func(a, b int) bool { return sorted[a].coeffID < sorted[b].coeffID })
+	i := 0
+	for i < len(sorted) {
+		te := sorted[i]
+		if accumulateTrivialG2(acc, te, &points[te.constraintIndex]) {
+			i++
+			continue
+		}
+		var group curve.G2Jac
+		j := i
+		for ; j < len(sorted) && sorted[j].coeffID == te.coeffID; j++ {
+			group.AddMixed(&points[sorted[j].constraintIndex])
+		}
+		var tmp curve.G2Jac
+		mulByDigitsG2(&tmp, &group, &coeffDigits[te.coeffID])
+		acc.AddAssign(&tmp)
+		i = j
+	}
+	return groups[:0]
+}
+
+// accumulateTrivialG1 handles terms with reserved coefficient IDs without a
+// scalar multiplication and reports whether the term was handled.
+func accumulateTrivialG1(acc *curve.G1Jac, te termEntry, value *curve.G1Affine) bool {
+	switch te.coeffID {
+	case constraint.CoeffIdZero:
+		return true
+	case constraint.CoeffIdOne:
+		acc.AddMixed(value)
+	case constraint.CoeffIdMinusOne:
+		var neg curve.G1Affine
+		neg.Neg(value)
+		acc.AddMixed(&neg)
+	case constraint.CoeffIdTwo:
+		acc.AddMixed(value)
+		acc.AddMixed(value)
+	default:
+		return false
+	}
+	return true
+}
+
+func accumulateTrivialG2(acc *curve.G2Jac, te termEntry, value *curve.G2Affine) bool {
+	switch te.coeffID {
+	case constraint.CoeffIdZero:
+		return true
+	case constraint.CoeffIdOne:
+		acc.AddMixed(value)
+	case constraint.CoeffIdMinusOne:
+		var neg curve.G2Affine
+		neg.Neg(value)
+		acc.AddMixed(&neg)
+	case constraint.CoeffIdTwo:
+		acc.AddMixed(value)
+		acc.AddMixed(value)
+	default:
+		return false
+	}
+	return true
+}
+
+// accumulateEvaluations reduces every wire's terms into the six evaluation
+// accumulators. Wires are processed in chunks pulled from an atomic counter
+// so expensive wires cannot strand idle workers.
+func accumulateEvaluations(targets [6]wireTerms, coeffTau1, coeffBetaTau1 []curve.G1Affine, coeffTau2 []curve.G2Affine, coeffAlphaTau1 []curve.G1Affine, coeffDigits []glvDigits, accA, accBA, accB []curve.G1Jac, accB2 []curve.G2Jac, accAB, accC []curve.G1Jac) {
+	nWires := len(accA)
+	const chunkSize = 4096
+	numChunks := (nWires + chunkSize - 1) / chunkSize
+	var nextChunk atomic.Uint32
+	var wg sync.WaitGroup
+	nbWorkers := runtime.GOMAXPROCS(0)
+	wg.Add(nbWorkers)
+	for g := 0; g < nbWorkers; g++ {
+		go func() {
+			defer wg.Done()
+			var groupsG1 []coeffGroupG1
+			var groupsG2 []coeffGroupG2
+			for {
+				chunk := int(nextChunk.Add(1)) - 1
+				if chunk >= numChunks {
+					return
+				}
+				start := chunk * chunkSize
+				end := start + chunkSize
+				if end > nWires {
+					end = nWires
+				}
+				for w := start; w < end; w++ {
+					groupsG1 = accumulateGroupsG1(&accA[w], groupsG1, targets[0].of(w), coeffTau1, coeffDigits)
+					groupsG1 = accumulateGroupsG1(&accBA[w], groupsG1, targets[1].of(w), coeffBetaTau1, coeffDigits)
+					groupsG1 = accumulateGroupsG1(&accB[w], groupsG1, targets[2].of(w), coeffTau1, coeffDigits)
+					groupsG2 = accumulateGroupsG2(&accB2[w], groupsG2, targets[3].of(w), coeffTau2, coeffDigits)
+					groupsG1 = accumulateGroupsG1(&accAB[w], groupsG1, targets[4].of(w), coeffAlphaTau1, coeffDigits)
+					groupsG1 = accumulateGroupsG1(&accC[w], groupsG1, targets[5].of(w), coeffTau1, coeffDigits)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+func InitPhase2(r1cs *cs.R1CS, srs1 *Phase1) (Phase2, Phase2Evaluations) {
+	srs := srs1.Parameters
+	size := len(srs.G1.AlphaTau)
+	if size < r1cs.GetNbConstraints() {
+		panic("Number of constraints is larger than expected")
+	}
+
+	c2 := Phase2{}
+
+	// Precompute GLV decompositions of the R1CS coefficients, which are reused
+	// across every wire accumulator they appear in.
+	coeffDigits := make([]glvDigits, len(r1cs.Coefficients))
+	utils.Parallelize(len(r1cs.Coefficients), func(start, end int) {
+		var bi big.Int
+		for cID := start; cID < end; cID++ {
+			r1cs.Coefficients[cID].BigInt(&bi)
+			coeffDigits[cID] = splitScalar(&bi)
+		}
+	})
+
+	// Prepare Lagrange coefficients of [τ...]₁, [τ...]₂, [ατ...]₁, [βτ...]₁.
+	// The cardinality inverse is not applied by the FFT; it is folded into the
+	// accumulated sums below, which are smaller than the FFT domain. The three
+	// G1 transforms share one traversal; the G2 transform runs concurrently.
+	sched := newTwiddleSchedule(size)
+	var coeffTau1, coeffAlphaTau1, coeffBetaTau1 []curve.G1Affine
+	var coeffTau2 []curve.G2Affine
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		coeffTau1, coeffAlphaTau1, coeffBetaTau1 = lagrangeCoeffsG1x3(srs.G1.Tau, srs.G1.AlphaTau, srs.G1.BetaTau, size, &sched)
+	}()
+	go func() {
+		defer wg.Done()
+		coeffTau2 = lagrangeCoeffsG2(srs.G2.Tau, size, &sched)
+	}()
+	wg.Wait()
+
+	internal, secret, public := r1cs.GetNbVariables()
+	nWires := internal + secret + public
+	var evals Phase2Evaluations
+	evals.G1.A = make([]curve.G1Affine, nWires)
+	evals.G1.B = make([]curve.G1Affine, nWires)
+	evals.G2.B = make([]curve.G2Affine, nWires)
+
+	// Accumulate constraint terms per wire. Per-wire CSR term lists are built
+	// in two passes over the constraint set, then wires are reduced with
+	// dynamic chunk scheduling: each worker pulls the next wire chunk from an
+	// atomic counter, which keeps the work balanced regardless of how the
+	// expensive terms are distributed across wires.
+	accA := make([]curve.G1Jac, nWires)
+	accB := make([]curve.G1Jac, nWires)
+	accB2 := make([]curve.G2Jac, nWires)
+	accBA := make([]curve.G1Jac, nWires)
+	accAB := make([]curve.G1Jac, nWires)
+	accC := make([]curve.G1Jac, nWires)
+	targets := buildWireTerms(r1cs, nWires)
+	accumulateEvaluations(targets, coeffTau1, coeffBetaTau1, coeffTau2, coeffAlphaTau1, coeffDigits, accA, accBA, accB, accB2, accAB, accC)
+
+	// Prepare default contribution
+	_, _, g1, g2 := curve.Generators()
+	c2.Parameters.G1.Delta = g1
+	c2.Parameters.G2.Delta = g2
+
+	// Build Z in PK as τⁱ(τⁿ - 1)  = τ⁽ⁱ⁺ⁿ⁾ - τⁱ  for i ∈ [0, n-2]
+	// τⁱ(τⁿ - 1)  = τ⁽ⁱ⁺ⁿ⁾ - τⁱ  for i ∈ [0, n-2]
+	n := len(srs.G1.AlphaTau)
+	c2.Parameters.G1.Z = make([]curve.G1Affine, n)
+	for i := 0; i < n-1; i++ {
+		c2.Parameters.G1.Z[i].Sub(&srs.G1.Tau[i+n], &srs.G1.Tau[i])
+	}
+	bitReverse(c2.Parameters.G1.Z)
+	c2.Parameters.G1.Z = c2.Parameters.G1.Z[:n-1]
+
+	// Apply the deferred cardinality inverse to every accumulated sum, in
+	// Jacobian coordinates, then convert each array to affine in batch.
+	accSum := make([]curve.G1Jac, nWires)
+	utils.Parallelize(nWires, func(start, end int) {
+		var tmp curve.G1Jac
+		for i := start; i < end; i++ {
+			mulByDigitsG1(&accA[i], &accA[i], &sched.cardinalityInv)
+			mulByDigitsG1(&accB[i], &accB[i], &sched.cardinalityInv)
+			mulByDigitsG2(&accB2[i], &accB2[i], &sched.cardinalityInv)
+			tmp.Set(&accBA[i])
+			tmp.AddAssign(&accAB[i])
+			tmp.AddAssign(&accC[i])
+			mulByDigitsG1(&accSum[i], &tmp, &sched.cardinalityInv)
+		}
+	}, runtime.GOMAXPROCS(0))
+	batchJacobToAffineG1(evals.G1.A, accA)
+	batchJacobToAffineG1(evals.G1.B, accB)
+	batchJacobToAffineG2(evals.G2.B, accB2)
+
+	// Evaluate L
+	nPrivate := internal + secret
+	c2.Parameters.G1.L = make([]curve.G1Affine, nPrivate)
+	evals.G1.VKK = make([]curve.G1Affine, public)
+	offset := public
+	sums := make([]curve.G1Affine, nWires)
+	batchJacobToAffineG1(sums, accSum)
+	for i := 0; i < nWires; i++ {
+		if i < public {
+			evals.G1.VKK[i].Set(&sums[i])
+		} else {
+			c2.Parameters.G1.L[i-offset].Set(&sums[i])
+		}
+	}
+
+	// Set δ public key
+	var delta fr.Element
+	delta.SetOne()
+	c2.PublicKey = newPublicKey(delta, nil, 1)
+
+	// Hash initial contribution
+	c2.Hash = c2.hash()
+	return c2, evals
+}
+
+func (c *Phase2) Contribute() {
+	// Sample toxic δ
+	var delta, deltaInv fr.Element
+	var deltaBI, deltaInvBI big.Int
+	delta.SetRandom()
+	deltaInv.Inverse(&delta)
+
+	delta.BigInt(&deltaBI)
+	deltaInv.BigInt(&deltaInvBI)
+
+	// Set δ public key
+	c.PublicKey = newPublicKey(delta, c.Hash, 1)
+
+	// Update δ
+	c.Parameters.G1.Delta.ScalarMultiplication(&c.Parameters.G1.Delta, &deltaBI)
+	c.Parameters.G2.Delta.ScalarMultiplication(&c.Parameters.G2.Delta, &deltaBI)
+
+	// Update Z and L using δ⁻¹, sharing one GLV decomposition of the scalar
+	// and one batch affine conversion per array.
+	deltaInvDigits := splitScalar(&deltaInvBI)
+
+	zJac := make([]curve.G1Jac, len(c.Parameters.G1.Z))
+	utils.Parallelize(len(zJac), func(start, end int) {
+		for i := start; i < end; i++ {
+			zJac[i].FromAffine(&c.Parameters.G1.Z[i])
+			mulByDigitsG1(&zJac[i], &zJac[i], &deltaInvDigits)
+		}
+	}, runtime.GOMAXPROCS(0))
+	batchJacobToAffineG1(c.Parameters.G1.Z, zJac)
+
+	lJac := make([]curve.G1Jac, len(c.Parameters.G1.L))
+	utils.Parallelize(len(lJac), func(start, end int) {
+		for i := start; i < end; i++ {
+			lJac[i].FromAffine(&c.Parameters.G1.L[i])
+			mulByDigitsG1(&lJac[i], &lJac[i], &deltaInvDigits)
+		}
+	}, runtime.GOMAXPROCS(0))
+	batchJacobToAffineG1(c.Parameters.G1.L, lJac)
+
+	// 4. Hash contribution
+	c.Hash = c.hash()
+}
+
+func VerifyPhase2(c0, c1 *Phase2, c ...*Phase2) error {
+	contribs := append([]*Phase2{c0, c1}, c...)
+	for i := 0; i < len(contribs)-1; i++ {
+		if err := verifyPhase2(contribs[i], contribs[i+1]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func verifyPhase2(current, contribution *Phase2) error {
+	// Compute R for δ
+	deltaR := genR(contribution.PublicKey.SG, contribution.PublicKey.SXG, current.Hash[:], 1)
+
+	// Check for knowledge of δ
+	if !sameRatio(contribution.PublicKey.SG, contribution.PublicKey.SXG, contribution.PublicKey.XR, deltaR) {
+		return errors.New("couldn't verify knowledge of δ")
+	}
+
+	// Check for valid updates using previous parameters
+	if !sameRatio(contribution.Parameters.G1.Delta, current.Parameters.G1.Delta, deltaR, contribution.PublicKey.XR) {
+		return errors.New("couldn't verify that [δ]₁ is based on previous contribution")
+	}
+	if !sameRatio(contribution.PublicKey.SG, contribution.PublicKey.SXG, contribution.Parameters.G2.Delta, current.Parameters.G2.Delta) {
+		return errors.New("couldn't verify that [δ]₂ is based on previous contribution")
+	}
+
+	// Check for valid updates of L and Z using
+	L, prevL := merge(contribution.Parameters.G1.L, current.Parameters.G1.L)
+	if !sameRatio(L, prevL, contribution.Parameters.G2.Delta, current.Parameters.G2.Delta) {
+		return errors.New("couldn't verify valid updates of L using δ⁻¹")
+	}
+	Z, prevZ := merge(contribution.Parameters.G1.Z, current.Parameters.G1.Z)
+	if !sameRatio(Z, prevZ, contribution.Parameters.G2.Delta, current.Parameters.G2.Delta) {
+		return errors.New("couldn't verify valid updates of L using δ⁻¹")
+	}
+
+	// Check hash of the contribution
+	h := contribution.hash()
+	for i := 0; i < len(h); i++ {
+		if h[i] != contribution.Hash[i] {
+			return errors.New("couldn't verify hash of contribution")
+		}
+	}
+
+	return nil
+}
+
+func (c *Phase2) hash() []byte {
+	sha := sha256.New()
+	c.writeTo(sha)
+	return sha.Sum(nil)
+}
+{{ else }}
 type Phase2Evaluations struct {
 	G1 struct {
 		A, B, VKK []curve.G1Affine
@@ -182,34 +705,14 @@ func (c *Phase2) Contribute() {
 	c.Parameters.G2.Delta.ScalarMultiplication(&c.Parameters.G2.Delta, &deltaBI)
 
 	// Update Z using δ⁻¹
-{{ if eq .Curve "BN254" }}
-	utils.Parallelize(len(c.Parameters.G1.Z), func(start, end int) {
-		var inverse big.Int
-		inverse.Set(&deltaInvBI)
-		for i := start; i < end; i++ {
-			c.Parameters.G1.Z[i].ScalarMultiplication(&c.Parameters.G1.Z[i], &inverse)
-		}
-	}, runtime.GOMAXPROCS(0))
-{{ else }}
 	for i := 0; i < len(c.Parameters.G1.Z); i++ {
 		c.Parameters.G1.Z[i].ScalarMultiplication(&c.Parameters.G1.Z[i], &deltaInvBI)
 	}
-{{ end }}
 
 	// Update L using δ⁻¹
-{{ if eq .Curve "BN254" }}
-	utils.Parallelize(len(c.Parameters.G1.L), func(start, end int) {
-		var inverse big.Int
-		inverse.Set(&deltaInvBI)
-		for i := start; i < end; i++ {
-			c.Parameters.G1.L[i].ScalarMultiplication(&c.Parameters.G1.L[i], &inverse)
-		}
-	}, runtime.GOMAXPROCS(0))
-{{ else }}
 	for i := 0; i < len(c.Parameters.G1.L); i++ {
 		c.Parameters.G1.L[i].ScalarMultiplication(&c.Parameters.G1.L[i], &deltaInvBI)
 	}
-{{ end }}
 
 	// 4. Hash contribution
 	c.Hash = c.hash()
@@ -268,3 +771,4 @@ func (c *Phase2) hash() []byte {
 	c.writeTo(sha)
 	return sha.Sum(nil)
 }
+{{ end }}
